@@ -1,0 +1,132 @@
+#ifndef ISL_CPP_MAP_INCLUDED
+#define ISL_CPP_MAP_INCLUDED
+
+#include "context.hpp"
+#include "object.hpp"
+
+#include <isl/map.h>
+
+namespace isl {
+
+template<>
+struct object_behavior<isl_basic_map>
+{
+    static isl_basic_map * copy( isl_basic_map * obj )
+    {
+        return isl_basic_map_copy(obj);
+    }
+    static void destroy( isl_basic_map *obj )
+    {
+        isl_basic_map_free(obj);
+    }
+    static isl_ctx * get_context( isl_basic_map * obj )
+    {
+        return isl_basic_map_get_ctx(obj);
+    }
+};
+
+template<>
+struct object_behavior<isl_map>
+{
+    static isl_map * copy( isl_map * obj )
+    {
+        return isl_map_copy(obj);
+    }
+    static void destroy( isl_map *obj )
+    {
+        isl_map_free(obj);
+    }
+    static isl_ctx * get_context( isl_map * obj )
+    {
+        return isl_map_get_ctx(obj);
+    }
+};
+
+template<>
+struct object_behavior<isl_union_map>
+{
+    static isl_union_map * copy( isl_union_map * obj )
+    {
+        return isl_union_map_copy(obj);
+    }
+    static void destroy( isl_union_map *obj )
+    {
+        isl_union_map_free(obj);
+    }
+    static isl_ctx * get_context( isl_union_map * obj )
+    {
+        return isl_union_map_get_ctx(obj);
+    }
+};
+
+class basic_map : public object<isl_basic_map>
+{
+public:
+    basic_map( isl_basic_map * map ): object(map) {}
+    basic_map( context & ctx, const string & text ):
+        object(isl_basic_map_read_from_str(ctx.get(), text.c_str()))
+    {}
+
+    basic_map inverse()
+    {
+        return basic_map( isl_basic_map_reverse(copy()) );
+    }
+};
+
+class map : public object<isl_map>
+{
+public:
+    map( isl_map * ptr ): object(ptr) {}
+    map( context & ctx, const string & text ):
+        object(ctx, isl_map_read_from_str(ctx.get(), text.c_str()))
+    {}
+    set range()
+    {
+        return isl_map_range(copy());
+    }
+    set domain()
+    {
+        return isl_map_domain(copy());
+    }
+    bool is_single_valued()
+    {
+        return isl_map_is_single_valued(get());
+    }
+    map inverse()
+    {
+        return map( isl_map_reverse(copy()) );
+    }
+    map operator() ( const map & arg )
+    {
+        isl_map * chain =
+                isl_map_apply_range( arg.copy(), copy() );
+        return map(chain);
+    }
+    map operator() ( const map & arg1, const map & arg2 )
+    {
+        isl_map *arg_merged = isl_map_flat_range_product(arg1.copy(), arg2.copy());
+        isl_map * chain = isl_map_apply_range( arg_merged, copy() );
+        return map(chain);
+    }
+};
+
+class union_map : public object<isl_union_map>
+{
+public:
+    union_map( isl_union_map * ptr ): object(ptr) {}
+    union_map( context & ctx, const string & text ):
+        object(ctx, isl_union_map_read_from_str(ctx.get(), text.c_str()))
+    {}
+    union_map inverse()
+    {
+        return union_map( isl_union_map_reverse(copy()) );
+    }
+};
+
+map operator* ( const map & lhs, const map & rhs )
+{
+    return isl_map_flat_range_product(lhs.copy(), rhs.copy());
+}
+
+}
+#endif // ISL_CPP_MAP_INCLUDED
