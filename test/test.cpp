@@ -72,6 +72,6 @@ int main()
     cout << "range := "; p.print(max_delta.range()); cout << endl;
     point pt = max_delta.range().single_point();
     cout << pt(space::variable, 0).real() << endl;
-    //cout << "constant := "; p.print(max_delta.range().is_single_valued()); cout << endl;
+
     return 0;
 }
