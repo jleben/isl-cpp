@@ -3,6 +3,7 @@
 
 #include "context.hpp"
 #include "object.hpp"
+#include "space.hpp"
 
 #include <isl/map.h>
 
@@ -66,8 +67,11 @@ public:
     basic_map( context & ctx, const string & text ):
         object(isl_basic_map_read_from_str(ctx.get(), text.c_str()))
     {}
-
-    basic_map inverse()
+    space get_space() const
+    {
+        return space( isl_basic_map_get_space(get()) );
+    }
+    basic_map inverse() const
     {
         return basic_map( isl_basic_map_reverse(copy()) );
     }
@@ -80,29 +84,55 @@ public:
     map( context & ctx, const string & text ):
         object(ctx, isl_map_read_from_str(ctx.get(), text.c_str()))
     {}
-    set range()
+    space get_space() const
+    {
+        return space( isl_map_get_space(get()) );
+    }
+#if 0
+    space domain_space()
+    {
+        return space( isl_space_domain_map(isl_map_get_space(get())) );
+    }
+    space range_space()
+    {
+        return space( isl_space_range_map(isl_map_get_space(get())) );
+    }
+#endif
+    set range() const
     {
         return isl_map_range(copy());
     }
-    set domain()
+    set domain() const
     {
         return isl_map_domain(copy());
     }
-    bool is_single_valued()
+    bool is_single_valued() const
     {
         return isl_map_is_single_valued(get());
     }
-    map inverse()
+    map inverse() const
     {
         return map( isl_map_reverse(copy()) );
     }
-    map operator() ( const map & arg )
+    map lex_minimum() const
+    {
+        return isl_map_lexmin(copy());
+    }
+    map lex_maximum() const
+    {
+        return isl_map_lexmax(copy());
+    }
+    void coalesce()
+    {
+        m_object = isl_map_coalesce(m_object);
+    }
+    map operator() ( const map & arg ) const
     {
         isl_map * chain =
                 isl_map_apply_range( arg.copy(), copy() );
         return map(chain);
     }
-    map operator() ( const map & arg1, const map & arg2 )
+    map operator() ( const map & arg1, const map & arg2 ) const
     {
         isl_map *arg_merged = isl_map_flat_range_product(arg1.copy(), arg2.copy());
         isl_map * chain = isl_map_apply_range( arg_merged, copy() );
@@ -117,9 +147,17 @@ public:
     union_map( context & ctx, const string & text ):
         object(ctx, isl_union_map_read_from_str(ctx.get(), text.c_str()))
     {}
-    union_map inverse()
+    space get_space() const
+    {
+        return space( isl_union_map_get_space(get()) );
+    }
+    union_map inverse() const
     {
         return union_map( isl_union_map_reverse(copy()) );
+    }
+    map map_for( space & spc ) const
+    {
+        return isl_union_map_extract_map(get(), spc.copy());
     }
 };
 

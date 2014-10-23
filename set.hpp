@@ -4,6 +4,7 @@
 #include "context.hpp"
 #include "object.hpp"
 #include "point.hpp"
+#include "space.hpp"
 
 #include <isl/set.h>
 
@@ -67,6 +68,10 @@ public:
     basic_set( context & ctx, const string & text ):
         object(ctx, isl_basic_set_read_from_str(ctx.get(), text.c_str()))
     {}
+    space get_space() const
+    {
+        return space( isl_basic_set_get_space(get()) );
+    }
 };
 
 class set : public object<isl_set>
@@ -76,8 +81,23 @@ public:
     set( context & ctx, const string & text ):
         object(ctx, isl_set_read_from_str(ctx.get(), text.c_str()))
     {}
-
-    point single_point()
+    space get_space() const
+    {
+        return space( isl_set_get_space(get()) );
+    }
+    set lex_minimum() const
+    {
+        return isl_set_lexmin(copy());
+    }
+    set lex_maximum() const
+    {
+        return isl_set_lexmax(copy());
+    }
+    void coalesce()
+    {
+        m_object = isl_set_coalesce(m_object);
+    }
+    point single_point() const
     {
         isl_point *p = isl_set_sample_point(get());
         if (!p)
@@ -93,6 +113,10 @@ public:
     union_set( context & ctx, const string & text ):
         object(ctx, isl_union_set_read_from_str(ctx.get(), text.c_str()))
     {}
+    space get_space() const
+    {
+        return space( isl_union_set_get_space(get()) );
+    }
 };
 
 set operator&( const set & lhs, const set & rhs )
