@@ -5,6 +5,7 @@
 #include "context.hpp"
 
 #include <isl/space.h>
+#include <isl/local_space.h>
 #include <isl/map.h>
 
 #include <string>
@@ -188,6 +189,32 @@ space operator*(const space &lhs, const space &rhs)
 {
     return product(lhs, rhs);
 }
+
+template<>
+struct object_behavior<isl_local_space>
+{
+    static isl_local_space * copy( isl_local_space * obj )
+    {
+        return isl_local_space_copy(obj);
+    }
+    static void destroy( isl_local_space *obj )
+    {
+        isl_local_space_free(obj);
+    }
+    static isl_ctx * get_context( isl_local_space * obj )
+    {
+        return isl_local_space_get_ctx(obj);
+    }
+};
+
+class local_space : public object<isl_local_space>
+{
+public:
+    local_space( isl_local_space * ptr ): object( ptr ) {}
+    local_space( const space & parent ):
+        object(parent.ctx(), isl_local_space_from_space(parent.copy()))
+    {}
+};
 
 }
 
