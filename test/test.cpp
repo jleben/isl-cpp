@@ -2,6 +2,7 @@
 #include "../space.hpp"
 #include "../set.hpp"
 #include "../map.hpp"
+#include "../expression.hpp"
 #include "../utility.hpp"
 #include "../printer.hpp"
 
@@ -10,12 +11,26 @@
 using namespace isl;
 using namespace std;
 
+void test_expr(context & ctx, printer &p)
+{
+    set s(ctx, "{[[a,b] -> [c,d]]}");
+    auto loc_space = local_space(s.get_space());
+    auto a = expression::variable(loc_space, space::variable, 0);
+    auto b = expression::variable(loc_space, space::variable, 2);
+    auto c = a - b;
+    auto m = map(c);
+    p.print(c); cout << endl;
+    p.print(m); cout << endl;
+}
+
 int main()
 {
     using isl::tuple;
 
     context ctx;
     printer p(ctx);
+
+    test_expr(ctx, p);
 
     space time_space(ctx, tuple(), tuple("T",1));
 
