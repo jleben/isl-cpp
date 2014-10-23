@@ -4,6 +4,7 @@
 #include "context.hpp"
 #include "object.hpp"
 #include "space.hpp"
+#include "printer.hpp"
 
 #include <isl/map.h>
 
@@ -160,6 +161,22 @@ public:
 map operator* ( const map & lhs, const map & rhs )
 {
     return isl_map_range_product(lhs.copy(), rhs.copy());
+}
+
+template <> inline
+void printer::print<basic_map>( const basic_map & m )
+{
+    m_printer = isl_printer_print_basic_map(m_printer, m.get());
+}
+template <> inline
+void printer::print<map>( const map & m )
+{
+    m_printer = isl_printer_print_map(m_printer, m.get());
+}
+template <> inline
+void printer::print<union_map>( const union_map & m )
+{
+    m_printer = isl_printer_print_union_map(m_printer, m.get());
 }
 
 }

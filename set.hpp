@@ -5,6 +5,7 @@
 #include "object.hpp"
 #include "point.hpp"
 #include "space.hpp"
+#include "printer.hpp"
 
 #include <isl/set.h>
 
@@ -141,6 +142,21 @@ set operator|( const basic_set & lhs, const basic_set & rhs )
     return set(u);
 }
 
+template <> inline
+void printer::print<basic_set>( const basic_set & s )
+{
+    m_printer = isl_printer_print_basic_set(m_printer, s.get());
+}
+template <> inline
+void printer::print<set>( const set & s )
+{
+    m_printer = isl_printer_print_set(m_printer, s.get());
+}
+template <> inline
+void printer::print<union_set>( const union_set & s )
+{
+    m_printer = isl_printer_print_union_set(m_printer, s.get());
+}
 
 }
 
