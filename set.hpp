@@ -69,6 +69,10 @@ public:
     basic_set( context & ctx, const string & text ):
         object(ctx, isl_basic_set_read_from_str(ctx.get(), text.c_str()))
     {}
+    static basic_set universe( const space & s )
+    {
+        return isl_basic_set_universe(s.copy());
+    }
     space get_space() const
     {
         return space( isl_basic_set_get_space(get()) );
@@ -82,6 +86,10 @@ public:
     set( context & ctx, const string & text ):
         object(ctx, isl_set_read_from_str(ctx.get(), text.c_str()))
     {}
+    static set universe( const space & s )
+    {
+        return isl_set_universe(s.copy());
+    }
     space get_space() const
     {
         return space( isl_set_get_space(get()) );

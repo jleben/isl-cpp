@@ -72,6 +72,10 @@ public:
     basic_map( const expression & expr ):
         object(expr.ctx(), isl_basic_map_from_aff(expr.copy()))
     {}
+    static basic_map universe( const space & s )
+    {
+        return isl_basic_map_universe(s.copy());
+    }
     space get_space() const
     {
         return space( isl_basic_map_get_space(get()) );
@@ -92,6 +96,10 @@ public:
     map( const expression & expr ):
         object(expr.ctx(), isl_map_from_aff(expr.copy()))
     {}
+    static map universe( const space & s )
+    {
+        return isl_map_universe(s.copy());
+    }
     space get_space() const
     {
         return space( isl_map_get_space(get()) );
