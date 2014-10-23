@@ -1,6 +1,7 @@
 #ifndef ISL_CPP_SPACE_INCLUDED
 #define ISL_CPP_SPACE_INCLUDED
 
+#include "object.hpp"
 #include "context.hpp"
 
 #include <isl/space.h>
@@ -28,7 +29,24 @@ public:
     vector<string> elements;
 };
 
-class space
+template<>
+struct object_behavior<isl_space>
+{
+    static isl_space * copy( isl_space * obj )
+    {
+        return isl_space_copy(obj);
+    }
+    static void destroy( isl_space *obj )
+    {
+        isl_space_free(obj);
+    }
+    static isl_ctx * get_context( isl_space * obj )
+    {
+        return isl_space_get_ctx(obj);
+    }
+};
+
+class space : public object<isl_space>
 {
     friend class set;
     friend class map;
@@ -45,39 +63,25 @@ public:
         all = isl_dim_all
     };
 
-    space( const space & other )
-    {
-        m_context = other.m_context;
-        m_space = other.copy();
-    }
-
-    space & operator=( const space & other )
-    {
-        m_context = other.m_context;
-        m_space = other.copy();
-        return *this;
-    }
+    space(isl_space *ptr): object(ptr) {}
 
     space( context & ctx, const tuple & params ):
-        m_context(ctx)
+        object(ctx, isl_space_params_alloc(ctx.get(), params.size()))
     {
-        m_space = isl_space_params_alloc(ctx.get(), params.size());
         set_names(isl_dim_param, params);
     }
 
     space( context & ctx, const tuple & params, const tuple & vars ):
-        m_context(ctx)
+        object(ctx, isl_space_set_alloc(ctx.get(), params.size(), vars.size()))
     {
-        m_space = isl_space_set_alloc(ctx.get(), params.size(), vars.size());
         set_names(isl_dim_param, params);
         set_names(isl_dim_set, vars);
     }
 
     space( context & ctx, const tuple & params,
            const tuple & in, const tuple & out ):
-        m_context(ctx)
+        object(ctx, isl_space_alloc(ctx.get(), params.size(), in.size(), out.size()))
     {
-        m_space = isl_space_alloc(ctx.get(), params.size(), in.size(), out.size());
         set_names(isl_dim_param, params);
         set_names(isl_dim_in, in);
         set_names(isl_dim_out, out);
@@ -119,17 +123,6 @@ public:
         return space( isl_space_map_from_domain_and_range(domain.copy(), range.copy()) );
     }
 
-    space (isl_space *s):
-        m_context(isl_space_get_ctx(s)),
-        m_space(s)
-    {
-        assert(m_space);
-    }
-
-    ~space()
-    {
-        isl_space_free(m_space);
-    }
 #if 0
     space range()
     {
@@ -148,21 +141,15 @@ public:
         return isl_space_dim(get(), (isl_dim_type) type );
     }
 
-    isl_space *get() const { return m_space; }
-    isl_space *copy() const { return isl_space_copy(m_space); }
-
 private:
-    space( context & ctx, isl_space *space ):
-        m_context(ctx),
-        m_space(space)
-    {}
+    space( context & ctx, isl_space *space ): object(ctx, space) {}
 
     void set_names( isl_dim_type type, const tuple & tup )
     {
         if (!tup.size())
             return;
 
-        isl_space_set_tuple_name(m_space, type, tup.name.c_str());
+        isl_space_set_tuple_name(get(), type, tup.name.c_str());
 
         int dim_idx = 0;
         for (const string & elem_name : tup.elements)
@@ -170,15 +157,12 @@ private:
             if (elem_name.empty())
                 continue;
 
-            isl_space_set_dim_name(m_space,
+            isl_space_set_dim_name(get(),
                                    type, dim_idx,
                                    elem_name.c_str());
             ++dim_idx;
         }
     }
-
-    context m_context;
-    isl_space *m_space;
 };
 
 inline
