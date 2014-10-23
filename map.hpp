@@ -126,17 +126,13 @@ public:
     {
         m_object = isl_map_coalesce(m_object);
     }
+    set operator() ( const set & arg ) const
+    {
+        return isl_set_apply( arg.copy(), copy() );
+    }
     map operator() ( const map & arg ) const
     {
-        isl_map * chain =
-                isl_map_apply_range( arg.copy(), copy() );
-        return map(chain);
-    }
-    map operator() ( const map & arg1, const map & arg2 ) const
-    {
-        isl_map *arg_merged = isl_map_flat_range_product(arg1.copy(), arg2.copy());
-        isl_map * chain = isl_map_apply_range( arg_merged, copy() );
-        return map(chain);
+        return isl_map_apply_range( arg.copy(), copy() );
     }
 };
 
@@ -163,7 +159,7 @@ public:
 
 map operator* ( const map & lhs, const map & rhs )
 {
-    return isl_map_flat_range_product(lhs.copy(), rhs.copy());
+    return isl_map_range_product(lhs.copy(), rhs.copy());
 }
 
 }

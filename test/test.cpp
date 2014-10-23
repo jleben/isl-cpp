@@ -58,19 +58,21 @@ int main()
     p.print(y_not_later * y_consumed_not_earlier);
     cout << endl;
 
-    map difference(ctx, "{ [a,b] -> [a-b] }");
-    map delta = difference(y_not_later, y_consumed_not_earlier);
+    map difference(ctx, "{ [Y[a] -> Y[b]] -> [a-b] }");
+    map delta = difference(y_not_later * y_consumed_not_earlier);
     cout << "delta := ";
     p.print(delta);
     cout << endl;
 
-    map max_delta = lex_maximum(delta);
+    set delta_range = delta.range();
+    cout << "range := "; p.print(delta_range); cout << endl;
+
+    set max_delta = delta_range.lex_maximum();
     cout << "max delta := ";
     p.print(max_delta);
     cout << endl;
 
-    cout << "range := "; p.print(max_delta.range()); cout << endl;
-    point pt = max_delta.range().single_point();
+    point pt = max_delta.single_point();
     cout << pt(space::variable, 0).real() << endl;
 
     return 0;
