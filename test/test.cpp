@@ -11,10 +11,34 @@
 using namespace isl;
 using namespace std;
 
+void test_space(context & ctx, printer &p)
+{
+    cout << "-- Testing space products --" << endl;
+    {
+        map u1(ctx, "{T1[a,b] -> B1[c,d]}");
+        map u2(ctx, "{T2[a,b] -> B2[c,d]}");
+        space s2 = product(u1.get_space(), u2.get_space());
+        map u3 = map::universe(s2);
+        p.print(u3); cout << endl;
+    }
+
+    {
+        set universe(ctx, "{A[a,b]}");
+        space s = universe.get_space();
+        space s2 = range_product(s, s);
+        set u2 = set::universe(s2);
+        p.print(u2); cout << endl;
+    }
+}
+
 void test_expr(context & ctx, printer &p)
 {
-    set s(ctx, "{[[a,b] -> [c,d]]}");
-    auto loc_space = local_space(s.get_space());
+    cout << "-- Testing expression --" << endl;
+
+    set universe(ctx, "{A[a,b]}");
+    space s = universe.get_space();
+    space s2 = range_product(s, s);
+    auto loc_space = local_space(s2);
     auto a = expression::variable(loc_space, space::variable, 0);
     auto b = expression::variable(loc_space, space::variable, 2);
     auto c = a - b;
@@ -23,14 +47,11 @@ void test_expr(context & ctx, printer &p)
     p.print(m); cout << endl;
 }
 
-int main()
+void test_buffer_size(context & ctx, printer &p)
 {
     using isl::tuple;
 
-    context ctx;
-    printer p(ctx);
-
-    test_expr(ctx, p);
+    cout << "-- Testing computation of buffer size --" << endl;
 
     space time_space(ctx, tuple(), tuple("T",1));
 
@@ -89,6 +110,18 @@ int main()
 
     point pt = max_delta.single_point();
     cout << pt(space::variable, 0).real() << endl;
+}
+
+int main()
+{
+    context ctx;
+    printer p(ctx);
+
+    test_space(ctx, p);
+    cout << endl;
+    test_expr(ctx, p);
+    cout << endl;
+    test_buffer_size(ctx, p);
 
     return 0;
 }
