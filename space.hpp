@@ -41,7 +41,8 @@ public:
         input = isl_dim_in,
         output = isl_dim_out,
         variable = isl_dim_set,
-        div = isl_dim_div
+        div = isl_dim_div,
+        all = isl_dim_all
     };
 
     space( const space & other )
@@ -179,6 +180,30 @@ private:
     context m_context;
     isl_space *m_space;
 };
+
+inline
+space product( const space &lhs, const space &rhs)
+{
+    return isl_space_product(lhs.copy(), rhs.copy());
+}
+
+inline
+space domain_product( const space &lhs, const space &rhs)
+{
+    return isl_space_domain_product(lhs.copy(), rhs.copy());
+}
+
+inline
+space range_product( const space &lhs, const space &rhs)
+{
+    return isl_space_range_product(lhs.copy(), rhs.copy());
+}
+
+inline
+space operator*(const space &lhs, const space &rhs)
+{
+    return product(lhs, rhs);
+}
 
 }
 
