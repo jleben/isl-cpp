@@ -4,9 +4,11 @@
 #include "context.hpp"
 
 #include <isl/space.h>
+#include <isl/map.h>
 
 #include <string>
 #include <vector>
+#include <cassert>
 
 namespace isl {
 
@@ -111,9 +113,38 @@ public:
         return space(ctx, s);
     }
 
+    static space from(const space & domain, const space & range)
+    {
+        return space( isl_space_map_from_domain_and_range(domain.copy(), range.copy()) );
+    }
+
+    space (isl_space *s):
+        m_context(isl_space_get_ctx(s)),
+        m_space(s)
+    {
+        assert(m_space);
+    }
+
     ~space()
     {
         isl_space_free(m_space);
+    }
+#if 0
+    space range()
+    {
+        assert(isl_space_is_map(get()));
+        return isl_space_range_map(get());
+    }
+
+    space domain()
+    {
+        assert(isl_space_is_map(get()));
+        return isl_space_domain_map(get());
+    }
+#endif
+    unsigned int dimension( dimension_type type )
+    {
+        return isl_space_dim(get(), (isl_dim_type) type );
     }
 
     isl_space *get() const { return m_space; }
@@ -121,8 +152,8 @@ public:
 
 private:
     space( context & ctx, isl_space *space ):
-        m_space(space),
-        m_context(ctx)
+        m_context(ctx),
+        m_space(space)
     {}
 
     void set_names( isl_dim_type type, const tuple & tup )
