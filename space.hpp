@@ -137,7 +137,7 @@ public:
         return isl_space_domain_map(get());
     }
 #endif
-    unsigned int dimension( dimension_type type )
+    unsigned int dimension( dimension_type type ) const
     {
         return isl_space_dim(get(), (isl_dim_type) type );
     }
