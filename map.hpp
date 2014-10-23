@@ -4,6 +4,7 @@
 #include "context.hpp"
 #include "object.hpp"
 #include "space.hpp"
+#include "expression.hpp"
 #include "printer.hpp"
 
 #include <isl/map.h>
@@ -68,6 +69,9 @@ public:
     basic_map( context & ctx, const string & text ):
         object(isl_basic_map_read_from_str(ctx.get(), text.c_str()))
     {}
+    basic_map( const expression & expr ):
+        object(expr.ctx(), isl_basic_map_from_aff(expr.copy()))
+    {}
     space get_space() const
     {
         return space( isl_basic_map_get_space(get()) );
@@ -84,6 +88,9 @@ public:
     map( isl_map * ptr ): object(ptr) {}
     map( context & ctx, const string & text ):
         object(ctx, isl_map_read_from_str(ctx.get(), text.c_str()))
+    {}
+    map( const expression & expr ):
+        object(expr.ctx(), isl_map_from_aff(expr.copy()))
     {}
     space get_space() const
     {
