@@ -4,6 +4,7 @@
 #include "context.hpp"
 #include "object.hpp"
 #include "space.hpp"
+#include "set.hpp"
 #include "expression.hpp"
 #include "printer.hpp"
 
@@ -170,6 +171,14 @@ public:
     map map_for( space & spc ) const
     {
         return isl_union_map_extract_map(get(), spc.copy());
+    }
+    union_map in_domain( const union_set & domain )
+    {
+        return isl_union_map_intersect_domain(copy(), domain.copy());
+    }
+    union_map in_range( const union_set & range )
+    {
+        return isl_union_map_intersect_range(copy(), range.copy());
     }
 };
 
