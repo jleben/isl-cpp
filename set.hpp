@@ -66,6 +66,9 @@ class basic_set : public object<isl_basic_set>
 {
 public:
     basic_set( isl_basic_set * ptr ): object( ptr ) {}
+    basic_set( space & spc ):
+        object(spc.ctx(), isl_basic_set_empty(spc.get()))
+    {}
     basic_set( context & ctx, const string & text ):
         object(ctx, isl_basic_set_read_from_str(ctx.get(), text.c_str()))
     {}
@@ -83,6 +86,9 @@ class set : public object<isl_set>
 {
 public:
     set( isl_set * ptr ): object(ptr) {}
+    set( space & spc ):
+        object(spc.ctx(), isl_set_empty(spc.get()))
+    {}
     set( context & ctx, const string & text ):
         object(ctx, isl_set_read_from_str(ctx.get(), text.c_str()))
     {}
@@ -121,6 +127,9 @@ public:
     union_set( isl_union_set * ptr ): object(ptr) {}
     union_set( context & ctx, const string & text ):
         object(ctx, isl_union_set_read_from_str(ctx.get(), text.c_str()))
+    {}
+    union_set( space & spc ):
+        object(spc.ctx(), isl_union_set_empty(spc.get()))
     {}
     space get_space() const
     {
