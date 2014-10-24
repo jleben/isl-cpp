@@ -42,7 +42,7 @@ public:
         }
     }
 
-    isl_ctx *get() { return d->ctx; }
+    isl_ctx *get() const { return d->ctx; }
 
 private:
 
