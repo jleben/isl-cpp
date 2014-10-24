@@ -12,7 +12,7 @@ namespace isl {
 class printer
 {
 public:
-    printer(context & ctx):
+    printer(const context & ctx):
         m_ctx(ctx)
     {
         m_printer = isl_printer_to_file(ctx.get(), stdout);
