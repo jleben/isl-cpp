@@ -36,14 +36,16 @@ public:
     {
         return isl_aff_var_on_domain(spc.copy(), (isl_dim_type) type, index);
     }
-#if 0
+
     static
     expression value( const local_space & spc,
                       const value & val )
     {
-        return isl_aff_val_on_domain(spc.copy(), val.copy());
+        // FIXME: use isl_aff_val_on_domain when available
+        isl_aff *expr = isl_aff_zero_on_domain(spc.copy());
+        expr = isl_aff_set_constant_val(expr, val.copy());
+        return expr;
     }
-#endif
 };
 
 expression operator+( const expression & lhs, const expression & rhs)

@@ -41,10 +41,30 @@ void test_expr(context & ctx, printer &p)
     auto loc_space = local_space(s2);
     auto a = expression::variable(loc_space, space::variable, 0);
     auto b = expression::variable(loc_space, space::variable, 2);
-    auto c = a - b;
-    auto m = map(c);
-    p.print(c); cout << endl;
+    auto c = expression::value(loc_space, value(ctx,(long)3));
+    auto result = a - b + c;
+    auto m = map(result);
+    p.print(result); cout << endl;
     p.print(m); cout << endl;
+}
+
+void test_constraint(context & ctx, printer & p)
+{
+    using isl::tuple;
+
+    cout << "-- Testing constraint --" << endl;
+
+    space s(ctx, tuple(), tuple("",1));
+    local_space ls(s);
+    auto x = expression::variable(ls, space::variable, 0);
+    auto c1 = expression::value(ls, value(ctx, (long)3));
+    auto c2 = expression::value(ls, value(ctx, (long)5));
+    auto constr = x + c1 >= c2;
+
+    auto S = set::universe(s);
+    S.add_constraint(constr);
+
+    p.print(S); cout << endl;
 }
 
 void test_buffer_size(context & ctx, printer &p)
@@ -120,6 +140,8 @@ int main()
     test_space(ctx, p);
     cout << endl;
     test_expr(ctx, p);
+    cout << endl;
+    test_constraint(ctx, p);
     cout << endl;
     test_buffer_size(ctx, p);
 

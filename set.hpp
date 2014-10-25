@@ -5,6 +5,7 @@
 #include "object.hpp"
 #include "point.hpp"
 #include "space.hpp"
+#include "constraint.hpp"
 #include "printer.hpp"
 
 #include <isl/set.h>
@@ -112,6 +113,11 @@ public:
     {
         m_object = isl_set_coalesce(m_object);
     }
+    void add_constraint( const constraint & c)
+    {
+        m_object = isl_set_add_constraint(m_object, c.copy());
+    }
+
     point single_point() const
     {
         isl_point *p = isl_set_sample_point(get());
