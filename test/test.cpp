@@ -57,8 +57,8 @@ void test_constraint(context & ctx, printer & p)
     space s(ctx, tuple(), tuple("",1));
     local_space ls(s);
     auto x = expression::variable(ls, space::variable, 0);
-    auto c1 = expression::value(ls, value(ctx, (long)3));
-    auto c2 = expression::value(ls, value(ctx, (long)5));
+    auto c1 = expression::value(ls, value(ctx, 3));
+    auto c2 = expression::value(ls, value(ctx, 5));
     auto constr = x + c1 >= c2;
 
     auto S = set::universe(s);
