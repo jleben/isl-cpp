@@ -214,6 +214,16 @@ public:
     local_space( const space & parent ):
         object(parent.ctx(), isl_local_space_from_space(parent.copy()))
     {}
+
+    static local_space from_domain( const local_space & other )
+    {
+        return isl_local_space_from_domain(other.copy());
+    }
+
+    local_space domain() const
+    {
+        return isl_local_space_domain(copy());
+    }
 };
 
 }

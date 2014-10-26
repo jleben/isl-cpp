@@ -42,19 +42,64 @@ public:
     }
 };
 
+inline
 constraint operator>= (const expression &lhs, const expression &rhs)
 {
     return constraint::inequality(lhs - rhs);
 }
 
+inline
+constraint operator>= (const expression & lhs, int rhs_int)
+{
+    return constraint::inequality(lhs - rhs_int);
+}
+
+inline
+constraint operator> (const expression & lhs, const expression &rhs)
+{
+    return constraint::inequality(lhs - rhs - 1);
+}
+
+inline
+constraint operator> (const expression & lhs, int rhs_int)
+{
+    return constraint::inequality(lhs - (rhs_int + 1));
+}
+
+inline
 constraint operator<= (const expression &lhs, const expression &rhs)
 {
     return constraint::inequality(rhs - lhs);
 }
 
+inline
+constraint operator<= (const expression &lhs, int rhs_int)
+{
+    return constraint::inequality(rhs_int - lhs);
+}
+
+inline
+constraint operator< (const expression &lhs, const expression &rhs)
+{
+    return constraint::inequality(rhs - lhs - 1);
+}
+
+inline
+constraint operator< (const expression &lhs, int rhs_int)
+{
+    return constraint::inequality((rhs_int - 1) - lhs);
+}
+
+inline
 constraint operator== (const expression &lhs, const expression &rhs)
 {
     return constraint::equality(lhs - rhs);
+}
+
+inline
+constraint operator== (const expression &lhs, int rhs_int)
+{
+    return constraint::equality(lhs - rhs_int);
 }
 
 }
