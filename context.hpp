@@ -2,6 +2,7 @@
 #define ISL_CPP_CONTEXT_INCLUDED
 
 #include <isl/ctx.h>
+#include <isl/options.h>
 
 #include <memory>
 #include <unordered_map>
@@ -20,6 +21,13 @@ class printer;
 class context
 {
 public:
+    enum error_action
+    {
+        warn_on_error = ISL_ON_ERROR_WARN,
+        continue_on_error = ISL_ON_ERROR_CONTINUE,
+        abort_on_error = ISL_ON_ERROR_ABORT
+    };
+
     context(): d( new data() )
     {
         m_store.emplace(d.get()->ctx, d);
@@ -40,6 +48,16 @@ public:
             d = std::shared_ptr<data>( new data() );
             m_store.emplace(d.get()->ctx, d);
         }
+    }
+
+    void set_error_action( int action )
+    {
+        isl_options_set_on_error(get(), action);
+    }
+
+    int error_action() const
+    {
+        return isl_options_get_on_error(get());
     }
 
     isl_ctx *get() const { return d->ctx; }
