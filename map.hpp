@@ -163,6 +163,9 @@ class union_map : public object<isl_union_map>
 {
 public:
     union_map( isl_union_map * ptr ): object(ptr) {}
+    union_map( const context & ctx ):
+        object(ctx, isl_union_map_empty(isl_space_alloc(ctx.get(),0,0,0)))
+    {}
     union_map( const space & param_space ):
         object(param_space.ctx(), isl_union_map_empty(param_space.copy()))
     {}
