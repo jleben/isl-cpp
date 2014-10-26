@@ -32,6 +32,10 @@ public:
         object(ctx, isl_val_int_from_si(ctx.get(), v)) {}
     value( context & ctx, unsigned long v ):
         object(ctx, isl_val_int_from_ui(ctx.get(), v)) {}
+    value( context & ctx, int v ):
+        object(ctx, isl_val_int_from_si(ctx.get(), v)) {}
+    value( context & ctx, unsigned int v ):
+        object(ctx, isl_val_int_from_ui(ctx.get(), v)) {}
     long numerator() { return isl_val_get_num_si(get()); }
     long denominator() { return isl_val_get_den_si(get()); }
     double real() { return isl_val_get_d(get()); }
