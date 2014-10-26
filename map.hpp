@@ -67,6 +67,9 @@ class basic_map : public object<isl_basic_map>
 {
 public:
     basic_map( isl_basic_map * map ): object(map) {}
+    basic_map( const space & spc ):
+        object(spc.ctx(), isl_basic_map_empty(spc.copy()))
+    {}
     basic_map( context & ctx, const string & text ):
         object(isl_basic_map_read_from_str(ctx.get(), text.c_str()))
     {}
@@ -91,6 +94,9 @@ class map : public object<isl_map>
 {
 public:
     map( isl_map * ptr ): object(ptr) {}
+    map( const space & spc ):
+        object(spc.ctx(), isl_map_empty(spc.copy()))
+    {}
     map( context & ctx, const string & text ):
         object(ctx, isl_map_read_from_str(ctx.get(), text.c_str()))
     {}
@@ -157,6 +163,9 @@ class union_map : public object<isl_union_map>
 {
 public:
     union_map( isl_union_map * ptr ): object(ptr) {}
+    union_map( const space & param_space ):
+        object(param_space.ctx(), isl_union_map_empty(param_space.copy()))
+    {}
     union_map( context & ctx, const string & text ):
         object(ctx, isl_union_map_read_from_str(ctx.get(), text.c_str()))
     {}
