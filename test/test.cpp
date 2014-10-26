@@ -31,6 +31,36 @@ void test_space(context & ctx, printer &p)
     }
 }
 
+void test_set(context & ctx, printer &p)
+{
+    cout << "-- Testing sets --" << endl;
+
+    {
+        union_set u(ctx);
+        cout << "empty union_set: "; p.print(u); cout << endl;
+        set a(ctx, "{X[a,b]}");
+        set b(ctx, "{Y[a,b]}");
+        u = u | a | b;
+        cout << "{X[a,b]} union {Y[a,b]} = "; p.print(u); cout << endl;
+    }
+}
+
+void test_map(context & ctx, printer &p)
+{
+    cout << "-- Testing maps --" << endl;
+
+    {
+        union_map u(ctx);
+        cout << "empty union_map: "; p.print(u); cout << endl;
+        map a(ctx, "{X[a] -> [2]}");
+        map b(ctx, "{Y[a] -> [3]}");
+        u = u | a | b;
+        cout << "{X[a] -> 2} union {Y[a] -> 3} = ";
+        p.print(u);
+        cout << endl;
+    }
+}
+
 void test_expr(context & ctx, printer &p)
 {
     cout << "-- Testing expression --" << endl;
@@ -147,6 +177,10 @@ int main()
     printer p(ctx);
 
     test_space(ctx, p);
+    cout << endl;
+    test_set(ctx,p);
+    cout << endl;
+    test_map(ctx,p);
     cout << endl;
     test_expr(ctx, p);
     cout << endl;

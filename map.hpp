@@ -194,6 +194,21 @@ public:
     }
 };
 
+union_map operator| (const union_map &lhs, const union_map & rhs)
+{
+    return isl_union_map_union(lhs.copy(), rhs.copy());
+}
+
+union_map operator| (const union_map &lhs, const map & rhs)
+{
+    return isl_union_map_union(lhs.copy(), isl_union_map_from_map(rhs.copy()));
+}
+
+union_map operator| (const union_map &lhs, const basic_map & rhs)
+{
+    return isl_union_map_union(lhs.copy(), isl_union_map_from_basic_map(rhs.copy()));
+}
+
 map operator* ( const map & lhs, const map & rhs )
 {
     return isl_map_range_product(lhs.copy(), rhs.copy());

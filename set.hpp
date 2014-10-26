@@ -167,6 +167,18 @@ set operator|( const basic_set & lhs, const basic_set & rhs )
     isl_set *u = isl_basic_set_union(lhs.copy(), rhs.copy());
     return set(u);
 }
+union_set operator| (const union_set &lhs, const union_set & rhs)
+{
+    return isl_union_set_union(lhs.copy(), rhs.copy());
+}
+union_set operator| (const union_set &lhs, const set & rhs)
+{
+    return isl_union_set_union(lhs.copy(), isl_union_set_from_set(rhs.copy()));
+}
+union_set operator| (const union_set &lhs, const basic_set & rhs)
+{
+    return isl_union_set_union(lhs.copy(), isl_union_set_from_basic_set(rhs.copy()));
+}
 
 template <> inline
 void printer::print<basic_set>( const basic_set & s )
