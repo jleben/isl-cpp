@@ -143,7 +143,7 @@ class union_set : public object<isl_union_set>
 public:
     union_set( isl_union_set * ptr ): object(ptr) {}
     union_set( const context & ctx ):
-        object(ctx, isl_union_set_empty(isl_space_alloc(ctx.get(),0,0,0)))
+        object(ctx, isl_union_set_empty(isl_space_params_alloc(ctx.get(),0)))
     {}
     union_set( space & param_space ):
         object(param_space.ctx(), isl_union_set_empty(param_space.copy()))
