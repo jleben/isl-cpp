@@ -18,6 +18,7 @@ link_directories(
 
 set(sources
   context.cpp
+  matrix.cpp
 )
 
 add_library(isl-cpp STATIC ${sources})

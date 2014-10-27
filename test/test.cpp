@@ -3,6 +3,7 @@
 #include "../set.hpp"
 #include "../map.hpp"
 #include "../expression.hpp"
+#include "../matrix.hpp"
 #include "../utility.hpp"
 #include "../printer.hpp"
 
@@ -76,6 +77,22 @@ void test_expr(context & ctx, printer &p)
     auto m = map(result);
     p.print(result); cout << endl;
     p.print(m); cout << endl;
+}
+
+void test_matrix(context & ctx, printer &p)
+{
+    cout << "-- Testing matrix --" << endl;
+
+    matrix m(ctx, 3, 4);
+    for (int row = 0; row < m.row_count(); ++row)
+    {
+        for (int col = 0; col < m.column_count(); ++col)
+        {
+            value v(ctx, row * 10 + col);
+            m(row, col) = v;
+        }
+    }
+    print(m);
 }
 
 void test_constraint(context & ctx, printer & p)
@@ -186,7 +203,9 @@ int main()
     cout << endl;
     test_constraint(ctx, p);
     cout << endl;
-    test_buffer_size(ctx, p);
+    test_matrix(ctx, p);
+    //cout << endl;
+    //test_buffer_size(ctx, p);
 
     return 0;
 }
