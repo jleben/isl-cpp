@@ -92,6 +92,10 @@ public:
     {
         return space( isl_basic_set_get_space(get()) );
     }
+    void add_constraint( const constraint & c)
+    {
+        m_object = isl_basic_set_add_constraint(m_object, c.copy());
+    }
 };
 
 class set : public object<isl_set>
