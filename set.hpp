@@ -6,6 +6,7 @@
 #include "point.hpp"
 #include "space.hpp"
 #include "constraint.hpp"
+#include "matrix.hpp"
 #include "printer.hpp"
 
 #include <isl/set.h>
@@ -69,6 +70,16 @@ public:
     basic_set( isl_basic_set * ptr ): object( ptr ) {}
     basic_set( space & spc ):
         object(spc.ctx(), isl_basic_set_empty(spc.copy()))
+    {}
+    basic_set( const space & spc,
+               const matrix & equalities, const matrix & inequalities ):
+        object(isl_basic_set_from_constraint_matrices(spc.copy(),
+                                                      equalities.copy(),
+                                                      inequalities.copy(),
+                                                      isl_dim_param,
+                                                      isl_dim_div,
+                                                      isl_dim_set,
+                                                      isl_dim_cst))
     {}
     basic_set( context & ctx, const string & text ):
         object(ctx, isl_basic_set_read_from_str(ctx.get(), text.c_str()))

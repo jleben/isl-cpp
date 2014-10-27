@@ -81,18 +81,46 @@ void test_expr(context & ctx, printer &p)
 
 void test_matrix(context & ctx, printer &p)
 {
+    using isl::tuple;
+
     cout << "-- Testing matrix --" << endl;
 
-    matrix m(ctx, 3, 4);
-    for (int row = 0; row < m.row_count(); ++row)
     {
-        for (int col = 0; col < m.column_count(); ++col)
+        cout << "Some matrix:" << endl;
+        matrix m(ctx, 3, 4);
+        for (int row = 0; row < m.row_count(); ++row)
         {
-            value v(ctx, row * 10 + col);
-            m(row, col) = v;
+            for (int col = 0; col < m.column_count(); ++col)
+            {
+                value v(ctx, row * 10 + col);
+                m(row, col) = v;
+            }
         }
+        print(m);
     }
-    print(m);
+
+    {
+        space spc(ctx, tuple(), tuple("A",2));
+
+        matrix eq(ctx, 1, 3);
+        eq(0,0) = value(ctx,1);
+        eq(0,1) = value(ctx,2);
+        eq(0,2) = value(ctx,-4);
+
+        matrix ineq(ctx, 1, 3);
+        ineq(0,0) = value(ctx,2);
+        ineq(0,1) = value(ctx,3);
+        ineq(0,2) = value(ctx,5);
+
+        basic_set st(spc, eq, ineq);
+
+        cout << "Equalities:" << endl;
+        print(eq);
+        cout << "Inequalities:" << endl;
+        print(ineq);
+        cout << "Set:" << endl;
+        p.print(st); cout << endl;
+    }
 }
 
 void test_constraint(context & ctx, printer & p)

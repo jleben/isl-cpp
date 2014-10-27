@@ -6,6 +6,7 @@
 #include "space.hpp"
 #include "set.hpp"
 #include "expression.hpp"
+#include "matrix.hpp"
 #include "printer.hpp"
 
 #include <isl/map.h>
@@ -72,6 +73,17 @@ public:
     {}
     basic_map( context & ctx, const string & text ):
         object(isl_basic_map_read_from_str(ctx.get(), text.c_str()))
+    {}
+    basic_map( const space & spc,
+               const matrix & equalities, const matrix & inequalities ):
+        object(isl_basic_map_from_constraint_matrices(spc.copy(),
+                                                      equalities.copy(),
+                                                      inequalities.copy(),
+                                                      isl_dim_param,
+                                                      isl_dim_div,
+                                                      isl_dim_in,
+                                                      isl_dim_out,
+                                                      isl_dim_cst))
     {}
     basic_map( const expression & expr ):
         object(expr.ctx(), isl_basic_map_from_aff(expr.copy()))
