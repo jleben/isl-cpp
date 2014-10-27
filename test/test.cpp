@@ -103,14 +103,14 @@ void test_matrix(context & ctx, printer &p)
         space spc(ctx, tuple(), tuple("A",2));
 
         matrix eq(ctx, 1, 3);
-        eq(0,0) = value(ctx,1);
-        eq(0,1) = value(ctx,2);
-        eq(0,2) = value(ctx,-4);
+        eq(0,0) = 1;
+        eq(0,1) = 2;
+        eq(0,2) = -4;
 
         matrix ineq(ctx, 1, 3);
-        ineq(0,0) = value(ctx,2);
-        ineq(0,1) = value(ctx,3);
-        ineq(0,2) = value(ctx,5);
+        ineq(0,0) = 2;
+        ineq(0,1) = 3;
+        ineq(0,2) = 5;
 
         basic_set st(spc, eq, ineq);
 

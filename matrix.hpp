@@ -42,6 +42,10 @@ public:
         {
             isl_mat_set_element_val(matrix, row, column, v.copy());
         }
+        element & operator=( int i )
+        {
+            isl_mat_set_element_si(matrix, row, column, i);
+        }
         isl::value value() const
         {
             return isl_mat_get_element_val(matrix, row, column);
