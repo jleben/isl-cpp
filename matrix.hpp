@@ -76,6 +76,7 @@ public:
         {}
     };
 
+    matrix(isl_mat *ptr): object(ptr) {}
     matrix( const context & ctx, unsigned rows, unsigned columns ):
         object(ctx, isl_mat_alloc(ctx.get(), rows, columns))
     {}
@@ -90,6 +91,16 @@ public:
     const element operator() (int row, int column) const
     {
         return element(get(), row, column);
+    }
+
+    matrix right_kernel() const
+    {
+        return isl_mat_right_kernel(copy());
+    }
+
+    matrix nullspace() const
+    {
+        return right_kernel();
     }
 };
 
