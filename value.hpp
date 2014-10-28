@@ -22,6 +22,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #define ISL_CPP_VALUE_INCLUDED
 
 #include "object.hpp"
+#include "printer.hpp"
 
 #include <isl/val.h>
 
@@ -61,6 +62,12 @@ public:
     double real() { return isl_val_get_d(get()); }
     bool is_integer() { return isl_val_is_int(get()); }
 };
+
+template<> inline
+void printer::print<value>( const value & v )
+{
+    m_printer = isl_printer_print_val(m_printer, v.get());
+}
 
 }
 
