@@ -149,6 +149,86 @@ void test_constraint(context & ctx, printer & p)
     }
 }
 
+void test_dataflow_counts(context & ctx, printer &p)
+{
+    /*
+    p(a) = 2
+
+    o(b) = 1
+    e(b) = 3
+    p(b) = 3
+
+    o(c) = 2
+    e(c) = 4
+    */
+
+    space spc(ctx, isl::tuple(), isl::tuple("",3));
+    auto a = expression::variable(spc, space::variable, 0);
+    auto b = expression::variable(spc, space::variable, 1);
+    auto c = expression::variable(spc, space::variable, 2);
+
+    // Flow counts:
+
+    int a_col = 0;
+    int b_col = 1;
+    int c_col = 2;
+
+    matrix flow(ctx, 2, 3, 0);
+    flow(0,a_col) = 2;
+    flow(0,b_col) = -1;
+    flow(1,b_col) = 3;
+    flow(1,c_col ) = -2;
+
+    matrix steady_counts = flow.nullspace();
+    cout << "Steady:" << endl;
+    print(steady_counts);
+
+    // Init counts:
+
+    // p(a)*i(a) - o(b)*i(b) + [p(a)*s(a) - o(b)*s(b) - e(b) - o(b)] >= 0
+
+    int s_a = steady_counts(a_col,0).value().numerator();
+    int s_b = steady_counts(b_col,0).value().numerator();
+    int s_c = steady_counts(c_col ,0).value().numerator();
+
+    auto init_counts = set::universe(spc);
+    init_counts.add_constraint( 2*a - 1*b + (2*s_a - 1*s_b - 3 - 1) >= 0 );
+    init_counts.add_constraint( 3*b - 2*c + (3*s_b - 2*s_c - 4 - 2) >= 0 );
+    init_counts.add_constraint(a >= 0);
+    init_counts.add_constraint(b >= 0);
+    init_counts.add_constraint(c >= 0);
+#if 0
+    matrix init_flow(ctx, 2, 4, 0);
+
+    init_flow(0, a_col) = 2;
+    init_flow(0, b_col) = -1;
+    init_flow(0, const_col) = 2*s_a - 1*s_b - 3 - 1;
+
+    init_flow(1, b_col) = 3;
+    init_flow(1, c_col ) = -2;
+    init_flow(1, const_col) = 3*s_b - 2*s_c - 4 - 2;
+
+    set init_possibilities(basic_set(spc, matrix(ctx,0,4), init_flow));
+#endif
+    cout << "Init:" << endl;
+    p.print(init_counts); cout << endl;
+
+    auto cost = a + b + c;
+    auto optimum = init_counts.minimum(cost);
+
+    cout << "Optimium Value:" << endl;
+    p.print(optimum); cout << endl;
+
+    init_counts.add_constraint( cost == optimum );
+
+    cout << "Optimum Set:" << endl;
+    p.print(init_counts); cout << endl;
+
+    point optimum_point = init_counts.single_point();
+    cout << "Optimum Point:" << endl;
+    p.print(optimum_point); cout << endl;
+}
+
 void test_buffer_size(context & ctx, printer &p)
 {
     using isl::tuple;
@@ -232,6 +312,8 @@ int main()
     test_constraint(ctx, p);
     cout << endl;
     test_matrix(ctx, p);
+    cout << endl;
+    test_dataflow_counts(ctx, p);
     //cout << endl;
     //test_buffer_size(ctx, p);
 
