@@ -117,6 +117,12 @@ constraint operator== (const expression &lhs, const expression &rhs)
 }
 
 inline
+constraint operator== (const expression &lhs, const value &rhs)
+{
+    return constraint::equality(lhs - rhs);
+}
+
+inline
 constraint operator== (const expression &lhs, int rhs_int)
 {
     return constraint::equality(lhs - rhs_int);
