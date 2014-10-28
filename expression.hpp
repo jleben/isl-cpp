@@ -69,6 +69,15 @@ public:
         return expr;
     }
 
+    static
+    expression value( const local_space & spc, int i )
+    {
+        // FIXME: use isl_aff_val_on_domain when available
+        isl_aff *expr = isl_aff_zero_on_domain(spc.copy());
+        expr = isl_aff_set_constant_si(expr, i);
+        return expr;
+    }
+
     space get_space() const
     {
         return isl_aff_get_space(get());
@@ -85,20 +94,20 @@ expression operator+( const expression & lhs, const expression & rhs)
 {
     return isl_aff_add(lhs.copy(), rhs.copy());
 }
-
 inline
 expression operator+( const expression & lhs, int rhs_int)
 {
-    auto rhs = expression::value
-            (lhs.get_local_space().domain(), value(lhs.ctx(), rhs_int));
-
-    return lhs + rhs;
+    return isl_aff_add_constant_si(lhs.copy(), rhs_int);
 }
-
 inline
-expression operator+( int lhs_int, const expression & rhs )
+expression operator+( const expression & lhs, const value & rhs_val)
 {
-    return rhs + lhs_int;
+    return isl_aff_add_constant_val(lhs.copy(), rhs_val.copy());
+}
+template <typename T> inline
+expression operator+( const T & lhs, const expression & rhs )
+{
+    return rhs + lhs;
 }
 
 inline
@@ -106,22 +115,22 @@ expression operator-( const expression & lhs, const expression & rhs)
 {
     return isl_aff_sub(lhs.copy(), rhs.copy());
 }
-
+inline
+expression operator-( const expression & lhs, const value & rhs_val)
+{
+    return isl_aff_add_constant_val(lhs.copy(), isl_val_neg(rhs_val.copy()));
+}
 inline
 expression operator-( const expression & lhs, int rhs_int)
 {
-    auto rhs = expression::value
-            (lhs.get_local_space().domain(), value(lhs.ctx(), rhs_int));
-
-    return lhs - rhs;
+    return isl_aff_add_constant_si(lhs.copy(), -rhs_int);
 }
-
 inline
 expression operator-( int lhs_val, const expression & rhs )
 {
-    auto lhs = expression::value
-            (rhs.get_local_space().domain(), value(rhs.ctx(), lhs_val));
-    return lhs - rhs;
+    isl_aff *neg_rhs = isl_aff_neg(rhs.copy());
+    isl_aff *result = isl_aff_add_constant_si(neg_rhs, lhs_val);
+    return result;
 }
 
 inline
@@ -129,22 +138,19 @@ expression operator*( const expression & lhs, const value & rhs)
 {
     return isl_aff_scale_val(lhs.copy(), rhs.copy());
 }
-
 inline
 expression operator*( const value & lhs, const expression & rhs )
 {
     return rhs * lhs;
 }
-
 inline
 expression operator*( const expression & lhs, int rhs_int)
 {
     auto rhs_val = value(lhs.ctx(), rhs_int);
     return lhs * rhs_val;
 }
-
 inline
-expression operator*(  int lhs_int, const expression & rhs )
+expression operator*( int lhs_int, const expression & rhs )
 {
     return rhs * lhs_int;
 }
