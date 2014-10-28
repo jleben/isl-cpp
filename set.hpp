@@ -191,6 +191,19 @@ public:
     {
         return space( isl_union_set_get_space(get()) );
     }
+    template <typename F>
+    void for_each( F f )
+    {
+        isl_union_set_foreach_set(get(), &for_each_helper<F>, &f);
+    }
+private:
+    template <typename F>
+    static int for_each_helper(isl_set *set_ptr, void *data_ptr)
+    {
+        auto f_ptr = reinterpret_cast<F*>(data_ptr);
+        bool result = (*f_ptr)(set(set_ptr));
+        return result ? 0 : -1;
+    }
 };
 
 set operator&( const set & lhs, const set & rhs )

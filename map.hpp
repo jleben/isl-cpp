@@ -224,6 +224,19 @@ public:
     {
         return isl_union_map_intersect_range(copy(), range.copy());
     }
+    template <typename F>
+    void for_each( F f )
+    {
+        isl_union_map_foreach_map(get(), &for_each_helper<F>, &f);
+    }
+private:
+    template <typename F>
+    static int for_each_helper(isl_map *map_ptr, void *data_ptr)
+    {
+        auto f_ptr = reinterpret_cast<F*>(data_ptr);
+        bool result = (*f_ptr)(map(map_ptr));
+        return result ? 0 : -1;
+    }
 };
 
 union_map operator| (const union_map &lhs, const union_map & rhs)

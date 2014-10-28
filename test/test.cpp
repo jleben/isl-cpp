@@ -44,6 +44,23 @@ void test_set(context & ctx, printer &p)
         u = u | a | b;
         cout << "{X[a,b]} union {Y[a,b]} = "; p.print(u); cout << endl;
     }
+
+    {
+        //union_set u(ctx, "{X[a,b]}; {Y[a,b]}");
+        //BUG? isl_union_set_read_from_str only reads the first union element!
+
+        union_set a(ctx, "{X[a,b]}");
+        union_set b(ctx, "{Y[a,b]}");
+        auto u = a | b;
+
+        cout << "a union_set: "; p.print(u); cout << endl;
+
+        cout << "each nested set:" << endl;
+        u.for_each( [&p]( const set & m )->bool {
+            cout << "-- "; p.print(m); cout << endl;
+            return true;
+        } );
+    }
 }
 
 void test_map(context & ctx, printer &p)
@@ -59,6 +76,18 @@ void test_map(context & ctx, printer &p)
         cout << "{X[a] -> 2} union {Y[a] -> 3} = ";
         p.print(u);
         cout << endl;
+    }
+
+    {
+        union_map u(ctx, "{X[a] -> [2]; Y[a] -> [3]}");
+        cout << "a union_map: "; p.print(u); cout << endl;
+
+        cout << "each nested map:" << endl;
+
+        u.for_each( [&p]( const map & m )->bool {
+            cout << "-- "; p.print(m); cout << endl;
+            return true;
+        } );
     }
 }
 
