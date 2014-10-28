@@ -25,6 +25,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object.hpp"
 #include "space.hpp"
 #include "value.hpp"
+#include "printer.hpp"
 
 #include <isl/point.h>
 
@@ -58,6 +59,12 @@ public:
                 ( get(), (isl_dim_type) type, dim );
     }
 };
+
+template<> inline
+void printer::print<point>( const point & pt )
+{
+    m_printer = isl_printer_print_point(m_printer, pt.get());
+}
 
 }
 
