@@ -80,6 +80,17 @@ public:
     matrix( const context & ctx, unsigned rows, unsigned columns ):
         object(ctx, isl_mat_alloc(ctx.get(), rows, columns))
     {}
+    matrix( const context & ctx, unsigned rows, unsigned columns, int val ):
+        object(ctx, isl_mat_alloc(ctx.get(), rows, columns))
+    {
+        for(int row = 0; row < row_count(); ++row)
+        {
+            for (int col = 0; col < column_count(); ++col)
+            {
+                isl_mat_set_element_si(get(), row, col, val);
+            }
+        }
+    }
     int row_count() const { return isl_mat_rows(get()); }
     int column_count() const { return isl_mat_cols(get()); }
 
