@@ -25,11 +25,13 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object.hpp"
 #include "point.hpp"
 #include "space.hpp"
+#include "expression.hpp"
 #include "constraint.hpp"
 #include "matrix.hpp"
 #include "printer.hpp"
 
 #include <isl/set.h>
+#include <isl/ilp.h>
 
 namespace isl {
 
@@ -125,6 +127,9 @@ public:
     set( space & spc ):
         object(spc.ctx(), isl_set_empty(spc.copy()))
     {}
+    set( const basic_set & bset ):
+        object(bset.ctx(), isl_set_from_basic_set(bset.copy()))
+    {}
     set( context & ctx, const string & text ):
         object(ctx, isl_set_read_from_str(ctx.get(), text.c_str()))
     {}
@@ -135,6 +140,13 @@ public:
     space get_space() const
     {
         return space( isl_set_get_space(get()) );
+    }
+    value minimum( const expression & expr )
+    {
+        isl_val *v = isl_set_min_val(get(), expr.get());
+        if (!v)
+            throw error("No solution.");
+        return v;
     }
     set lex_minimum() const
     {
@@ -155,7 +167,7 @@ public:
 
     point single_point() const
     {
-        isl_point *p = isl_set_sample_point(get());
+        isl_point *p = isl_set_sample_point(copy());
         if (!p)
             throw error("No single point.");
         return p;
