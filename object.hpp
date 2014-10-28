@@ -45,9 +45,12 @@ public:
 
     object<T> & operator= ( const object<T> & other )
     {
-        object_behavior<T>::destroy(m_object);
-        m_ctx = other.m_ctx;
-        m_object = other.copy();
+        if (m_object != other.m_object)
+        {
+            object_behavior<T>::destroy(m_object);
+            m_ctx = other.m_ctx;
+            m_object = other.copy();
+        }
     }
 
 protected:
