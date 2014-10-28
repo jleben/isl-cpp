@@ -225,7 +225,7 @@ public:
         return isl_union_map_intersect_range(copy(), range.copy());
     }
     template <typename F>
-    void for_each( F f )
+    void for_each( F f ) const
     {
         isl_union_map_foreach_map(get(), &for_each_helper<F>, &f);
     }

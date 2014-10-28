@@ -192,7 +192,7 @@ public:
         return space( isl_union_set_get_space(get()) );
     }
     template <typename F>
-    void for_each( F f )
+    void for_each( F f ) const
     {
         isl_union_set_foreach_set(get(), &for_each_helper<F>, &f);
     }
