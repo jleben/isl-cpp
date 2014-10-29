@@ -155,10 +155,27 @@ expression operator*( int lhs_int, const expression & rhs )
     return rhs * lhs_int;
 }
 
+inline
+expression operator/ ( const expression & lhs, unsigned rhs_int )
+{
+    return isl_aff_scale_down_ui(lhs.copy(), rhs_int);
+}
+
+inline
+expression floor(const expression & e)
+{
+    return isl_aff_floor(e.copy());
+}
+
 template <> inline
 void printer::print<expression>( const expression & expr )
 {
     m_printer = isl_printer_print_aff(m_printer, expr.get());
+}
+
+expression space::operator()(dimension_type type, int index)
+{
+    return expression::variable(local_space(*this), type, index);
 }
 
 }

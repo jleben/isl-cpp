@@ -37,6 +37,8 @@ namespace isl {
 using std::string;
 using std::vector;
 
+class expression;
+
 class tuple
 {
 public:
@@ -144,6 +146,8 @@ public:
         return space( isl_space_map_from_domain_and_range(domain.copy(), range.copy()) );
     }
 
+    expression operator()(dimension_type type, int index);
+
 #if 0
     space range()
     {
@@ -160,6 +164,11 @@ public:
     unsigned int dimension( dimension_type type ) const
     {
         return isl_space_dim(get(), (isl_dim_type) type );
+    }
+
+    space wrapped()
+    {
+        return isl_space_wrap(copy());
     }
 
 private:

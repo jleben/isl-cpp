@@ -120,6 +120,10 @@ public:
     {
         return basic_map( isl_basic_map_reverse(copy()) );
     }
+    void add_constraint( const constraint & c )
+    {
+        m_object = isl_basic_map_add_constraint(m_object, c.copy());
+    }
 };
 
 class map : public object<isl_map>
@@ -181,6 +185,14 @@ public:
     {
         m_object = isl_map_coalesce(m_object);
     }
+    map in_domain( const set & domain )
+    {
+        return isl_map_intersect_domain(copy(), domain.copy());
+    }
+    map in_range( const set & range )
+    {
+        return isl_map_intersect_range(copy(), range.copy());
+    }
     set operator() ( const set & arg ) const
     {
         return isl_set_apply( arg.copy(), copy() );
@@ -188,6 +200,18 @@ public:
     map operator() ( const map & arg ) const
     {
         return isl_map_apply_range( arg.copy(), copy() );
+    }
+    string tuple_name( space::dimension_type type )
+    {
+        return isl_map_get_tuple_name(get(), (isl_dim_type) type);
+    }
+    void insert_dimensions( space::dimension_type type, unsigned pos, unsigned count )
+    {
+        m_object = isl_map_insert_dims(m_object, (isl_dim_type) type, pos, count);
+    }
+    void add_constraint( const constraint & c )
+    {
+        m_object = isl_map_add_constraint(m_object, c.copy());
     }
 };
 
@@ -203,6 +227,12 @@ public:
     {}
     union_map( context & ctx, const string & text ):
         object(ctx, isl_union_map_read_from_str(ctx.get(), text.c_str()))
+    {}
+    union_map( const basic_map & bm ):
+        object(bm.ctx(), isl_union_map_from_basic_map(bm.copy()))
+    {}
+    union_map( const map & m ):
+        object(m.ctx(), isl_union_map_from_map(m.copy()))
     {}
     space get_space() const
     {
@@ -234,7 +264,8 @@ private:
     static int for_each_helper(isl_map *map_ptr, void *data_ptr)
     {
         auto f_ptr = reinterpret_cast<F*>(data_ptr);
-        bool result = (*f_ptr)(map(map_ptr));
+        map m(map_ptr);
+        bool result = (*f_ptr)(m);
         return result ? 0 : -1;
     }
 };

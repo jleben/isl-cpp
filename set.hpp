@@ -187,9 +187,19 @@ public:
     union_set( context & ctx, const string & text ):
         object(ctx, isl_union_set_read_from_str(ctx.get(), text.c_str()))
     {}
+    union_set( const basic_set & bs ):
+        object(bs.ctx(), isl_union_set_from_basic_set(bs.copy()))
+    {}
+    union_set( const set & s ):
+        object(s.ctx(), isl_union_set_from_set(s.copy()))
+    {}
     space get_space() const
     {
         return space( isl_union_set_get_space(get()) );
+    }
+    set set_for( space & spc ) const
+    {
+        return isl_union_set_extract_set(get(), spc.copy());
     }
     template <typename F>
     void for_each( F f ) const
@@ -215,6 +225,10 @@ basic_set operator&( const basic_set & lhs, const basic_set & rhs )
 {
     isl_basic_set *x = isl_basic_set_intersect(lhs.copy(), rhs.copy());
     return basic_set(x);
+}
+union_set operator&( const union_set & lhs, const union_set & rhs )
+{
+    return isl_union_set_intersect(lhs.copy(), rhs.copy());
 }
 
 set operator|( const set & lhs, const set & rhs )
