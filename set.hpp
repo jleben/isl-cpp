@@ -141,6 +141,18 @@ public:
     {
         return space( isl_set_get_space(get()) );
     }
+    unsigned dimensions() const
+    {
+        return isl_set_dim( get(), isl_dim_set );
+    }
+    string name() const
+    {
+        return isl_set_get_tuple_name(get());
+    }
+    void set_name( const string & name )
+    {
+        m_object = isl_set_set_tuple_name(m_object, name.c_str());
+    }
     value minimum( const expression & expr )
     {
         isl_val *v = isl_set_min_val(get(), expr.get());
@@ -160,11 +172,14 @@ public:
     {
         m_object = isl_set_coalesce(m_object);
     }
+    void insert_dimensions( unsigned pos, unsigned count )
+    {
+        m_object = isl_set_insert_dims(m_object, isl_dim_set, pos, count);
+    }
     void add_constraint( const constraint & c)
     {
         m_object = isl_set_add_constraint(m_object, c.copy());
     }
-
     point single_point() const
     {
         isl_point *p = isl_set_sample_point(copy());

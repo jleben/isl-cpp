@@ -116,6 +116,10 @@ public:
     {
         return space( isl_basic_map_get_space(get()) );
     }
+    isl::local_space local_space() const
+    {
+        return isl_basic_map_get_local_space(get());
+    }
     basic_map inverse() const
     {
         return basic_map( isl_basic_map_reverse(copy()) );
@@ -123,6 +127,14 @@ public:
     void add_constraint( const constraint & c )
     {
         m_object = isl_basic_map_add_constraint(m_object, c.copy());
+    }
+    basic_map in_domain( const basic_set & domain )
+    {
+        return isl_basic_map_intersect_domain(copy(), domain.copy());
+    }
+    basic_map in_range( const basic_set & range )
+    {
+        return isl_basic_map_intersect_range(copy(), range.copy());
     }
 };
 
@@ -138,6 +150,9 @@ public:
     {}
     map( const expression & expr ):
         object(expr.ctx(), isl_map_from_aff(expr.copy()))
+    {}
+    map( const basic_map &bm ):
+        object(bm.ctx(), isl_map_from_basic_map(bm.copy()))
     {}
     static map universe( const space & s )
     {
@@ -201,7 +216,15 @@ public:
     {
         return isl_map_apply_range( arg.copy(), copy() );
     }
-    string tuple_name( space::dimension_type type )
+    void map_domain_through( const map & other )
+    {
+        m_object = isl_map_apply_domain(m_object, other.copy());
+    }
+    void map_range_through( const map & other )
+    {
+        m_object = isl_map_apply_range(m_object, other.copy());
+    }
+    string name( space::dimension_type type )
     {
         return isl_map_get_tuple_name(get(), (isl_dim_type) type);
     }
@@ -253,6 +276,14 @@ public:
     union_map in_range( const union_set & range )
     {
         return isl_union_map_intersect_range(copy(), range.copy());
+    }
+    void map_domain_through( const union_map & other )
+    {
+        m_object = isl_union_map_apply_domain(m_object, other.copy());
+    }
+    void map_range_through( const union_map & other )
+    {
+        m_object = isl_union_map_apply_range(m_object, other.copy());
     }
     template <typename F>
     void for_each( F f ) const
