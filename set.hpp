@@ -226,7 +226,8 @@ private:
     static int for_each_helper(isl_set *set_ptr, void *data_ptr)
     {
         auto f_ptr = reinterpret_cast<F*>(data_ptr);
-        bool result = (*f_ptr)(set(set_ptr));
+        set s(set_ptr);
+        bool result = (*f_ptr)(s);
         return result ? 0 : -1;
     }
 };
