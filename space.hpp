@@ -166,6 +166,18 @@ public:
         return isl_space_dim(get(), (isl_dim_type) type );
     }
 
+    void insert_dimensions( dimension_type type, unsigned pos, unsigned n)
+    {
+        m_object = isl_space_insert_dims(m_object,
+                                         (isl_dim_type) type, pos, n);
+    }
+
+    void set_name( dimension_type type, const string & name )
+    {
+        m_object = isl_space_set_tuple_name(m_object,
+                                            (isl_dim_type) type, name.c_str());
+    }
+
     space wrapped()
     {
         return isl_space_wrap(copy());
