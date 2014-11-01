@@ -23,6 +23,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "object.hpp"
 #include "space.hpp"
+#include "value.hpp"
 #include "expression.hpp"
 
 #include <isl/constraint.h>
@@ -51,14 +52,39 @@ class constraint : public object<isl_constraint>
 public:
     constraint(isl_constraint * ptr): object(ptr) {}
 
+    static constraint equality( const local_space & spc )
+    {
+        return isl_equality_alloc(spc.copy());
+    }
+    static constraint inequality( const local_space & spc )
+    {
+        return isl_inequality_alloc(spc.copy());
+    }
     static constraint equality( const expression & expr )
     {
         return isl_equality_from_aff(expr.copy());
     }
-
     static constraint inequality( const expression & expr )
     {
         return isl_inequality_from_aff(expr.copy());
+    }
+    void set_coefficient( space::dimension_type type, int pos, int val )
+    {
+        m_object = isl_constraint_set_coefficient_si
+                (m_object, (isl_dim_type) type, pos, val);
+    }
+    void set_coefficient( space::dimension_type type, int pos, const value & val )
+    {
+        m_object = isl_constraint_set_coefficient_val
+                (m_object, (isl_dim_type) type, pos, val.copy());
+    }
+    void set_constant( int val )
+    {
+        m_object = isl_constraint_set_constant_si(m_object, val);
+    }
+    void set_constant( const value & val )
+    {
+        m_object = isl_constraint_set_constant_val(m_object, val.copy());
     }
 };
 
