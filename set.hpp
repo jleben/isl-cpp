@@ -118,6 +118,11 @@ public:
     {
         m_object = isl_basic_set_add_constraint(m_object, c.copy());
     }
+    void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
+    {
+        m_object = isl_basic_set_drop_constraints_involving_dims
+                (m_object, (isl_dim_type) t, i, n);
+    }
 };
 
 class set : public object<isl_set>
@@ -145,6 +150,20 @@ public:
     {
         return isl_set_dim( get(), isl_dim_set );
     }
+
+    identifier id() const
+    {
+        isl_id *c_id = isl_set_get_tuple_id(get());
+        identifier id(c_id);
+        isl_id_free(c_id);
+        return id;
+    }
+    void set_id(const identifier & id )
+    {
+        isl_id *c_id = id.c_id(m_ctx.get());
+        if (c_id)
+            m_object = isl_set_set_tuple_id(get(), c_id);
+    }
     string name() const
     {
         return isl_set_get_tuple_name(get());
@@ -156,6 +175,13 @@ public:
     value minimum( const expression & expr )
     {
         isl_val *v = isl_set_min_val(get(), expr.get());
+        if (!v)
+            throw error("No solution.");
+        return v;
+    }
+    value maximum( const expression & expr )
+    {
+        isl_val *v = isl_set_max_val(get(), expr.get());
         if (!v)
             throw error("No solution.");
         return v;
@@ -179,6 +205,11 @@ public:
     void add_constraint( const constraint & c)
     {
         m_object = isl_set_add_constraint(m_object, c.copy());
+    }
+    void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
+    {
+        m_object = isl_set_drop_constraints_involving_dims
+                (m_object, (isl_dim_type) t, i, n);
     }
     point single_point() const
     {
@@ -268,6 +299,15 @@ union_set operator| (const union_set &lhs, const set & rhs)
 union_set operator| (const union_set &lhs, const basic_set & rhs)
 {
     return isl_union_set_union(lhs.copy(), isl_union_set_from_basic_set(rhs.copy()));
+}
+
+set operator* ( const set & lhs, const set & rhs )
+{
+    return isl_set_product(lhs.copy(), rhs.copy());
+}
+union_set operator* ( const union_set & lhs, const union_set & rhs )
+{
+    return isl_union_set_product(lhs.copy(), rhs.copy());
 }
 
 template <> inline

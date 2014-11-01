@@ -39,18 +39,47 @@ using std::vector;
 
 class expression;
 
+class identifier
+{
+public:
+    identifier(): data(nullptr) {}
+    identifier(const string & name): name(name), data(nullptr) {}
+    identifier(void *data): data(data) {}
+    identifier(const string & name, void * data): name(name), data(data) {}
+    identifier(isl_id*c_id):
+        name(isl_id_get_name(c_id)),
+        data(isl_id_get_user(c_id))
+    {}
+    isl_id *c_id(isl_ctx *c_ctx) const
+    {
+        const char *c_name = name.empty() ? nullptr : name.c_str();
+        if (!c_name && !data)
+            return nullptr;
+        else
+            return isl_id_alloc(c_ctx, c_name, data);
+    }
+
+    bool empty() const { return name.empty() && data == nullptr; }
+    string name;
+    void *data;
+};
+
 class tuple
 {
 public:
     tuple() {}
-    tuple(const string & name, int size): name(name), elements(size) {}
-    tuple(const vector<string> & elements): elements(elements) {}
-    tuple(const string & name, const vector<string> & elements):
-        name(name), elements(elements) {}
+    tuple(int size): elements(size) {}
+    tuple(const string & name, int size): id(name), elements(size) {}
+    tuple(const identifier & id, int size): id(id), elements(size) {}
     int size() const { return elements.size(); }
-    string name;
-    vector<string> elements;
+    identifier id;
+    vector<identifier> elements;
 };
+
+class parameter_tuple : public tuple { using tuple::tuple; };
+class input_tuple : public tuple { using tuple::tuple; };
+class output_tuple : public tuple { using tuple::tuple; };
+class set_tuple : public tuple { using tuple::tuple; };
 
 template<>
 struct object_behavior<isl_space>
@@ -88,27 +117,40 @@ public:
 
     space(isl_space *ptr): object(ptr) {}
 
-    space( context & ctx, const tuple & params ):
+    space( context & ctx, const parameter_tuple & params ):
         object(ctx, isl_space_params_alloc(ctx.get(), params.size()))
     {
-        set_names(isl_dim_param, params);
+        set_identifiers(parameter, params);
     }
 
     space( context & ctx, const tuple & params, const tuple & vars ):
         object(ctx, isl_space_set_alloc(ctx.get(), params.size(), vars.size()))
     {
-        set_names(isl_dim_param, params);
-        set_names(isl_dim_set, vars);
+        set_identifiers(parameter, params);
+        set_identifiers(variable, vars);
+    }
+
+    space( context & ctx, const set_tuple & vars ):
+        object(ctx, isl_space_set_alloc(ctx.get(), 0, vars.size()))
+    {
+        set_identifiers(variable, vars);
     }
 
     space( context & ctx, const tuple & params,
            const tuple & in, const tuple & out ):
         object(ctx, isl_space_alloc(ctx.get(), params.size(), in.size(), out.size()))
     {
-        set_names(isl_dim_param, params);
-        set_names(isl_dim_in, in);
-        set_names(isl_dim_out, out);
+        set_identifiers(parameter, params);
+        set_identifiers(input, in);
+        set_identifiers(output, out);
     }
+
+    space( context & ctx, const input_tuple & in, const output_tuple & out ):
+      object(ctx, isl_space_alloc(ctx.get(), 0, in.size(), out.size()))
+  {
+      set_identifiers(input, in);
+      set_identifiers(output, out);
+  }
 
     static space for_parameters( context & ctx, int param_count )
     {
@@ -166,16 +208,38 @@ public:
         return isl_space_dim(get(), (isl_dim_type) type );
     }
 
-    void insert_dimensions( dimension_type type, unsigned pos, unsigned n)
+    void insert_dimensions( dimension_type type, unsigned pos, unsigned n=1)
     {
         m_object = isl_space_insert_dims(m_object,
                                          (isl_dim_type) type, pos, n);
     }
-
+    identifier id( dimension_type type ) const
+    {
+        isl_id *c_id = isl_space_get_tuple_id(get(), (isl_dim_type) type);
+        identifier id(c_id);
+        isl_id_free(c_id);
+        return id;
+    }
+    void set_id( dimension_type type, const identifier & id )
+    {
+        isl_id *c_id = id.c_id(m_ctx.get());
+        if (c_id)
+            m_object = isl_space_set_tuple_id(get(), (isl_dim_type)type, c_id);
+    }
+    string name( dimension_type type ) const
+    {
+        return isl_space_get_tuple_name(get(), (isl_dim_type) type);
+    }
     void set_name( dimension_type type, const string & name )
     {
         m_object = isl_space_set_tuple_name(m_object,
                                             (isl_dim_type) type, name.c_str());
+    }
+
+    space & wrap()
+    {
+        m_object = isl_space_wrap(m_object);
+        return *this;
     }
 
     space wrapped()
@@ -186,22 +250,21 @@ public:
 private:
     space( context & ctx, isl_space *space ): object(ctx, space) {}
 
-    void set_names( isl_dim_type type, const tuple & tup )
+    void set_identifiers( dimension_type type, const tuple & tup )
     {
         if (!tup.size())
             return;
 
-        isl_space_set_tuple_name(get(), type, tup.name.c_str());
+        set_id(type, tup.id);
 
         int dim_idx = 0;
-        for (const string & elem_name : tup.elements)
+        for (const identifier & elem : tup.elements)
         {
-            if (elem_name.empty())
+            if (elem.empty())
                 continue;
 
-            isl_space_set_dim_name(get(),
-                                   type, dim_idx,
-                                   elem_name.c_str());
+            isl_id * c_id = isl_id_alloc(m_ctx.get(), elem.name.c_str(), elem.data);
+            m_object = isl_space_set_dim_id(get(), (isl_dim_type)type, dim_idx, c_id);
             ++dim_idx;
         }
     }

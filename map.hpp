@@ -128,6 +128,11 @@ public:
     {
         m_object = isl_basic_map_add_constraint(m_object, c.copy());
     }
+    void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
+    {
+        m_object = isl_basic_map_drop_constraints_involving_dims
+                (m_object, (isl_dim_type) t, i, n);
+    }
     basic_map in_domain( const basic_set & domain )
     {
         return isl_basic_map_intersect_domain(copy(), domain.copy());
@@ -224,6 +229,19 @@ public:
     {
         m_object = isl_map_apply_range(m_object, other.copy());
     }
+    identifier id( space::dimension_type type ) const
+    {
+        isl_id *c_id = isl_map_get_tuple_id(get(), (isl_dim_type) type);
+        identifier id(c_id);
+        isl_id_free(c_id);
+        return id;
+    }
+    void set_id( space::dimension_type type, const identifier & id )
+    {
+        isl_id *c_id = id.c_id(m_ctx.get());
+        if (c_id)
+            m_object = isl_map_set_tuple_id(get(), (isl_dim_type)type, c_id);
+    }
     string name( space::dimension_type type )
     {
         return isl_map_get_tuple_name(get(), (isl_dim_type) type);
@@ -235,6 +253,11 @@ public:
     void add_constraint( const constraint & c )
     {
         m_object = isl_map_add_constraint(m_object, c.copy());
+    }
+    void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
+    {
+        m_object = isl_map_drop_constraints_involving_dims
+                (m_object, (isl_dim_type) t, i, n);
     }
 };
 
@@ -285,6 +308,7 @@ public:
     {
         m_object = isl_union_map_apply_range(m_object, other.copy());
     }
+
     template <typename F>
     void for_each( F f ) const
     {
