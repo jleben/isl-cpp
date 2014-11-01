@@ -158,23 +158,37 @@ void test_constraint(context & ctx, printer & p)
 
     cout << "-- Testing constraint --" << endl;
 
-    space s(ctx, tuple(), tuple("",1));
-    local_space ls(s);
-    auto x = expression::variable(ls, space::variable, 0);
-
     {
-        auto lhs = x + 3;
-        auto constr = lhs > 2;
-        auto S = set::universe(s);
-        S.add_constraint(constr);
-        cout << "x + 3 > 2: "; p.print(S); cout << endl;
+        space s(ctx, tuple(), tuple("",1));
+        local_space ls(s);
+        auto x = expression::variable(ls, space::variable, 0);
+
+        {
+            auto lhs = x + 3;
+            auto constr = lhs > 2;
+            auto S = set::universe(s);
+            S.add_constraint(constr);
+            cout << "x + 3 > 2: "; p.print(S); cout << endl;
+        }
+        {
+            auto a = x * 2;
+            auto constr = a < 10;
+            auto S = set::universe(s);
+            S.add_constraint(constr);
+            cout << "x * 2 < 10: "; p.print(S); cout << endl;
+        }
     }
     {
-        auto a = x * 2;
-        auto constr = a < 10;
-        auto S = set::universe(s);
-        S.add_constraint(constr);
-        cout << "x * 2 < 10: "; p.print(S); cout << endl;
+        map m(ctx, "{ [a] -> [b] }");
+        local_space ls(m.get_space());
+        auto cnstr = constraint::inequality(ls);
+        cnstr.set_coefficient(space::input, 0, 1);
+        m.add_constraint(cnstr);
+        //auto a = expression::variable(ls, space::variable, 0);
+        //cout << "Expression: "; p.print(a); cout << endl;
+        //m.add_constraint(a >= 0);
+
+        cout << "Constrained map: "; p.print(m); cout << endl;
     }
 }
 
