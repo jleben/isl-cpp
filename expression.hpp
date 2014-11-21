@@ -56,7 +56,9 @@ public:
     expression variable( const local_space & spc,
                          space::dimension_type type, unsigned index )
     {
-        return isl_aff_var_on_domain(spc.copy(), (isl_dim_type) type, index);
+        local_space expr_space(spc);
+        wrap_space(expr_space, type, index);
+        return isl_aff_var_on_domain(expr_space.copy(), (isl_dim_type) type, index);
     }
 
     static
@@ -86,6 +88,27 @@ public:
     local_space get_local_space() const
     {
         return isl_aff_get_local_space(get());
+    }
+
+private:
+    static void wrap_space(local_space & spc,
+                           space::dimension_type & type, unsigned & index )
+    {
+        if (spc.space().is_map())
+        {
+            switch(type)
+            {
+            case space::input:
+                type = space::variable;
+                break;
+            case space::output:
+                type = space::variable;
+                index = index + spc.dimension(space::input);
+                break;
+            default:;
+            }
+            spc = spc.wrapped();
+        }
     }
 };
 
@@ -173,9 +196,16 @@ void printer::print<expression>( const expression & expr )
     m_printer = isl_printer_print_aff(m_printer, expr.get());
 }
 
+inline
 expression space::operator()(dimension_type type, int index)
 {
     return expression::variable(local_space(*this), type, index);
+}
+
+inline
+expression local_space::operator()(space::dimension_type type, int index)
+{
+    return expression::variable(*this, type, index);
 }
 
 }

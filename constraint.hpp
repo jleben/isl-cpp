@@ -62,11 +62,17 @@ public:
     }
     static constraint equality( const expression & expr )
     {
-        return isl_equality_from_aff(expr.copy());
+        constraint c = isl_equality_from_aff(expr.copy());
+        if (c.local_space().is_wrapping())
+            c.unwrap_space();
+        return c;
     }
     static constraint inequality( const expression & expr )
     {
-        return isl_inequality_from_aff(expr.copy());
+        constraint c = isl_inequality_from_aff(expr.copy());
+        if (c.local_space().is_wrapping())
+            c.unwrap_space();
+        return c;
     }
     void set_coefficient( space::dimension_type type, int pos, int val )
     {
@@ -85,6 +91,19 @@ public:
     void set_constant( const value & val )
     {
         m_object = isl_constraint_set_constant_val(m_object, val.copy());
+    }
+    isl::expression expression() const
+    {
+        return isl_constraint_get_aff(get());
+    }
+    isl::local_space local_space() const
+    {
+        return isl_constraint_get_local_space(get());
+    }
+    constraint & unwrap_space()
+    {
+        m_object = isl_constraint_unwrap_local_space(m_object);
+        return *this;
     }
 };
 
