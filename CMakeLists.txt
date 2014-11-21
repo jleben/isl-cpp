@@ -9,11 +9,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(pluto_dir "~/code/pluto-0.11.0")
 #set(pluto_dir "~/code/pluto")
 
+set(isl_include_dir "${pluto_dir}/isl/include" CACHE PATH "ISL include directory")
+set(isl_library_dir "${pluto_dir}/isl/.libs" CACHE PATH "ISL library directory")
+
 include_directories(
-  "${pluto_dir}/isl/include"
+  ${isl_include_dir}
 )
 link_directories(
-  "${pluto_dir}/isl/.libs"
+  ${isl_library_dir}
 )
 
 set(sources
