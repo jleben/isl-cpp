@@ -188,7 +188,13 @@ void test_constraint(context & ctx, printer & p)
         //cout << "Expression: "; p.print(a); cout << endl;
         //m.add_constraint(a >= 0);
 
+        auto a = ls(space::input, 1);
+        m.add_constraint( (a < 5) );
+
         cout << "Constrained map: "; p.print(m); cout << endl;
+
+        //isl_aff *expr = isl_constraint_get_aff(cnstr.get());
+        //cout << "Constraint expression: "; p.print(cnstr.expression()); cout << endl;
     }
 }
 
