@@ -112,6 +112,7 @@ public:
         output = isl_dim_out,
         variable = isl_dim_set,
         div = isl_dim_div,
+        constant = isl_dim_cst,
         all = isl_dim_all
     };
 
@@ -236,6 +237,23 @@ public:
                                             (isl_dim_type) type, name.c_str());
     }
 
+    bool is_params() const
+    {
+        return isl_space_is_params(get());
+    }
+    bool is_set() const
+    {
+        return isl_space_is_set(get());
+    }
+    bool is_map() const
+    {
+        return isl_space_is_map(get());
+    }
+    bool is_wrapping() const
+    {
+        return isl_space_is_wrapping(get());
+    }
+
     space & wrap()
     {
         m_object = isl_space_wrap(m_object);
@@ -328,6 +346,33 @@ public:
     {
         return isl_local_space_domain(copy());
     }
+
+    local_space wrapped() const
+    {
+        return isl_local_space_wrap(copy());
+    }
+
+    local_space unwrapped() const
+    {
+        return isl_local_space_unwrap(copy());
+    }
+
+    isl::space space() const
+    {
+        return isl_local_space_get_space(get());
+    }
+
+    int dimension( space::dimension_type type ) const
+    {
+        return isl_local_space_dim(get(), (isl_dim_type) type );
+    }
+
+    bool is_wrapping() const
+    {
+        return isl_local_space_is_wrapping(get());
+    }
+
+    expression operator()(space::dimension_type type, int index);
 };
 
 }
