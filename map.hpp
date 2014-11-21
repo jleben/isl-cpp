@@ -120,6 +120,10 @@ public:
     {
         return isl_basic_map_get_local_space(get());
     }
+    bool is_empty() const
+    {
+        return isl_basic_map_is_empty(get());
+    }
     basic_map inverse() const
     {
         return basic_map( isl_basic_map_reverse(copy()) );
@@ -188,6 +192,10 @@ public:
     bool is_single_valued() const
     {
         return isl_map_is_single_valued(get());
+    }
+    bool is_empty() const
+    {
+        return isl_map_is_empty(get());
     }
     map inverse() const
     {
@@ -284,6 +292,10 @@ public:
     {
         return space( isl_union_map_get_space(get()) );
     }
+    bool is_empty() const
+    {
+        return isl_union_map_is_empty(get());
+    }
     union_map inverse() const
     {
         return union_map( isl_union_map_reverse(copy()) );
@@ -309,6 +321,15 @@ public:
         m_object = isl_union_map_apply_range(m_object, other.copy());
     }
 
+    union_set operator() ( const union_set & arg ) const
+    {
+        return isl_union_set_apply( arg.copy(), copy() );
+    }
+    union_map operator() ( const union_map & arg ) const
+    {
+        return isl_union_map_apply_range( arg.copy(), copy() );
+    }
+
     template <typename F>
     void for_each( F f ) const
     {
@@ -325,21 +346,23 @@ private:
     }
 };
 
+inline
 union_map operator| (const union_map &lhs, const union_map & rhs)
 {
     return isl_union_map_union(lhs.copy(), rhs.copy());
 }
-
+inline
 union_map operator| (const union_map &lhs, const map & rhs)
 {
     return isl_union_map_union(lhs.copy(), isl_union_map_from_map(rhs.copy()));
 }
-
+inline
 union_map operator| (const union_map &lhs, const basic_map & rhs)
 {
     return isl_union_map_union(lhs.copy(), isl_union_map_from_basic_map(rhs.copy()));
 }
 
+inline
 map operator* ( const map & lhs, const map & rhs )
 {
     return isl_map_range_product(lhs.copy(), rhs.copy());

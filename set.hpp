@@ -114,6 +114,10 @@ public:
     {
         return space( isl_basic_set_get_space(get()) );
     }
+    bool is_empty() const
+    {
+        return isl_basic_set_is_empty(get());
+    }
     void add_constraint( const constraint & c)
     {
         m_object = isl_basic_set_add_constraint(m_object, c.copy());
@@ -172,6 +176,12 @@ public:
     {
         m_object = isl_set_set_tuple_name(m_object, name.c_str());
     }
+
+    bool is_empty() const
+    {
+        return isl_set_is_empty(get());
+    }
+
     value minimum( const expression & expr )
     {
         isl_val *v = isl_set_min_val(get(), expr.get());
@@ -243,6 +253,10 @@ public:
     {
         return space( isl_union_set_get_space(get()) );
     }
+    bool is_empty() const
+    {
+        return isl_union_set_is_empty(get());
+    }
     set set_for( space & spc ) const
     {
         return isl_union_set_extract_set(get(), spc.copy());
@@ -263,48 +277,58 @@ private:
     }
 };
 
+inline
 set operator&( const set & lhs, const set & rhs )
 {
     isl_set *x = isl_set_intersect(lhs.copy(), rhs.copy());
     return set(x);
 }
+inline
 basic_set operator&( const basic_set & lhs, const basic_set & rhs )
 {
     isl_basic_set *x = isl_basic_set_intersect(lhs.copy(), rhs.copy());
     return basic_set(x);
 }
+inline
 union_set operator&( const union_set & lhs, const union_set & rhs )
 {
     return isl_union_set_intersect(lhs.copy(), rhs.copy());
 }
 
+inline
 set operator|( const set & lhs, const set & rhs )
 {
     isl_set *u = isl_set_union(lhs.copy(), rhs.copy());
     return set(u);
 }
+inline
 set operator|( const basic_set & lhs, const basic_set & rhs )
 {
     isl_set *u = isl_basic_set_union(lhs.copy(), rhs.copy());
     return set(u);
 }
+inline
 union_set operator| (const union_set &lhs, const union_set & rhs)
 {
     return isl_union_set_union(lhs.copy(), rhs.copy());
 }
+inline
 union_set operator| (const union_set &lhs, const set & rhs)
 {
     return isl_union_set_union(lhs.copy(), isl_union_set_from_set(rhs.copy()));
 }
+inline
 union_set operator| (const union_set &lhs, const basic_set & rhs)
 {
     return isl_union_set_union(lhs.copy(), isl_union_set_from_basic_set(rhs.copy()));
 }
 
+inline
 set operator* ( const set & lhs, const set & rhs )
 {
     return isl_set_product(lhs.copy(), rhs.copy());
 }
+inline
 union_set operator* ( const union_set & lhs, const union_set & rhs )
 {
     return isl_union_set_product(lhs.copy(), rhs.copy());
