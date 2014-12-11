@@ -214,6 +214,12 @@ public:
         m_object = isl_space_insert_dims(m_object,
                                          (isl_dim_type) type, pos, n);
     }
+    void drop_dimensions( dimension_type type, unsigned pos, unsigned n=1)
+    {
+        m_object = isl_space_drop_dims(m_object,
+                                       (isl_dim_type) type, pos, n);
+    }
+
     identifier id( dimension_type type ) const
     {
         isl_id *c_id = isl_space_get_tuple_id(get(), (isl_dim_type) type);

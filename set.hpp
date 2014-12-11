@@ -35,6 +35,10 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace isl {
 
+class basic_map;
+class map;
+class union_map;
+
 template<>
 struct object_behavior<isl_basic_set>
 {
@@ -127,6 +131,7 @@ public:
         m_object = isl_basic_set_drop_constraints_involving_dims
                 (m_object, (isl_dim_type) t, i, n);
     }
+    basic_map unwrapped();
 };
 
 class set : public object<isl_set>
@@ -221,6 +226,9 @@ public:
         m_object = isl_set_drop_constraints_involving_dims
                 (m_object, (isl_dim_type) t, i, n);
     }
+
+    map unwrapped();
+
     point single_point() const
     {
         isl_point *p = isl_set_sample_point(copy());
@@ -257,6 +265,9 @@ public:
     {
         return isl_union_set_is_empty(get());
     }
+
+    union_map unwrapped();
+
     set set_for( space & spc ) const
     {
         return isl_union_set_extract_set(get(), spc.copy());
@@ -266,6 +277,7 @@ public:
     {
         isl_union_set_foreach_set(get(), &for_each_helper<F>, &f);
     }
+
 private:
     template <typename F>
     static int for_each_helper(isl_set *set_ptr, void *data_ptr)

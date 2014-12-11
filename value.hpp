@@ -25,6 +25,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "printer.hpp"
 
 #include <isl/val.h>
+#include <cassert>
 
 namespace isl {
 
@@ -57,10 +58,11 @@ public:
         object(ctx, isl_val_int_from_si(ctx.get(), v)) {}
     value( const context & ctx, unsigned int v ):
         object(ctx, isl_val_int_from_ui(ctx.get(), v)) {}
-    long numerator() { return isl_val_get_num_si(get()); }
-    long denominator() { return isl_val_get_den_si(get()); }
-    double real() { return isl_val_get_d(get()); }
-    bool is_integer() { return isl_val_is_int(get()); }
+    long numerator() const { return isl_val_get_num_si(get()); }
+    long denominator() const { return isl_val_get_den_si(get()); }
+    double real() const { return isl_val_get_d(get()); }
+    bool is_integer() const { return isl_val_is_int(get()); }
+    long integer() const { assert(is_integer()); return numerator(); }
 };
 
 template<> inline

@@ -128,6 +128,10 @@ public:
     {
         return basic_map( isl_basic_map_reverse(copy()) );
     }
+    basic_set wrapped() const
+    {
+        return isl_basic_map_wrap(copy());
+    }
     void add_constraint( const constraint & c )
     {
         m_object = isl_basic_map_add_constraint(m_object, c.copy());
@@ -200,6 +204,10 @@ public:
     map inverse() const
     {
         return map( isl_map_reverse(copy()) );
+    }
+    set wrapped() const
+    {
+        return isl_map_wrap(copy());
     }
     map lex_minimum() const
     {
@@ -300,6 +308,10 @@ public:
     {
         return union_map( isl_union_map_reverse(copy()) );
     }
+    union_set wrapped() const
+    {
+        return isl_union_map_wrap(copy());
+    }
     map map_for( space & spc ) const
     {
         return isl_union_map_extract_map(get(), spc.copy());
@@ -345,6 +357,36 @@ private:
         return result ? 0 : -1;
     }
 };
+
+inline basic_map basic_set::unwrapped()
+{
+    return isl_basic_set_unwrap(copy());
+}
+inline map set::unwrapped()
+{
+    return isl_set_unwrap(copy());
+}
+inline union_map union_set::unwrapped()
+{
+    return isl_union_set_unwrap(copy());
+}
+
+inline
+basic_map operator& (const basic_map & lhs, const basic_map & rhs)
+{
+    return isl_basic_map_intersect(lhs.copy(), rhs.copy());
+}
+inline
+map operator& (const map & lhs, const map & rhs)
+{
+    return isl_map_intersect(lhs.copy(), rhs.copy());
+}
+inline
+union_map operator& (const union_map & lhs, const union_map & rhs)
+{
+    return isl_union_map_intersect(lhs.copy(), rhs.copy());
+}
+
 
 inline
 union_map operator| (const union_map &lhs, const union_map & rhs)
