@@ -51,6 +51,7 @@ public:
             m_ctx = other.m_ctx;
             m_object = other.copy();
         }
+        return *this;
     }
 
 protected:

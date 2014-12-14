@@ -61,10 +61,12 @@ public:
         element & operator=( const value & v )
         {
             isl_mat_set_element_val(matrix, row, column, v.copy());
+            return *this;
         }
         element & operator=( int i )
         {
             isl_mat_set_element_si(matrix, row, column, i);
+            return *this;
         }
         isl::value value() const
         {
