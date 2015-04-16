@@ -141,6 +141,27 @@ public:
         m_object = isl_basic_map_drop_constraints_involving_dims
                 (m_object, (isl_dim_type) t, i, n);
     }
+    matrix equalities_matrix() const
+    {
+        return isl_basic_map_equalities_matrix
+                (get(),
+                 isl_dim_param,
+                 isl_dim_div,
+                 isl_dim_in,
+                 isl_dim_out,
+                 isl_dim_cst);
+    }
+    matrix inequalities_matrix() const
+    {
+        return isl_basic_map_inequalities_matrix
+                (get(),
+                 isl_dim_param,
+                 isl_dim_div,
+                 isl_dim_in,
+                 isl_dim_out,
+                 isl_dim_cst);
+    }
+
     basic_map in_domain( const basic_set & domain )
     {
         return isl_basic_map_intersect_domain(copy(), domain.copy());
