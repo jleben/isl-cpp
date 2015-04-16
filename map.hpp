@@ -296,6 +296,22 @@ public:
         m_object = isl_map_drop_constraints_involving_dims
                 (m_object, (isl_dim_type) t, i, n);
     }
+
+    template <typename F>
+    void for_each( F f ) const
+    {
+        isl_map_foreach_basic_map(get(), &for_each_helper<F>, &f);
+    }
+
+private:
+    template <typename F>
+    static int for_each_helper(isl_basic_map *basic_map_ptr, void *data_ptr)
+    {
+        auto f_ptr = reinterpret_cast<F*>(data_ptr);
+        basic_map m(basic_map_ptr);
+        bool result = (*f_ptr)(m);
+        return result ? 0 : -1;
+    }
 };
 
 class union_map : public object<isl_union_map>
