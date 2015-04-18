@@ -4,6 +4,8 @@
 #include <isl/ast_build.h>
 #include <cstdio>
 #include <algorithm>
+#include <limits>
+#include <unordered_map>
 
 using namespace std;
 
@@ -21,7 +23,7 @@ int gcd(int a, int b)
 int lcm(int a, int b)
 {
     int div = gcd(a, b);
-    return div ? (a * b / div) : 0;
+    return div ? (a / div * b) : 0;
 }
 
 int main()
@@ -65,17 +67,22 @@ int main()
     isl_schedule * sched =
             isl_schedule_constraints_compute_schedule(constr);
     isl::union_map sched_map(isl_schedule_get_map(sched));
+    auto sched_in_domain = sched_map.in_domain(domains);
 
     cout << "schedule:" << endl;
     p = isl_printer_print_schedule(p, sched); cout << endl;
     cout << "schedule map:" << endl;
     p = isl_printer_print_union_map(p, sched_map.get()); cout << endl;
 
-    int period;
-    int offset;
+    int common_period;
+    int common_offset = std::numeric_limits<int>::min();
+
+    unordered_map<string, int> flow_dims;
 
     {
         using namespace isl;
+
+        // Period
 
         vector<int> ks;
 
@@ -94,7 +101,7 @@ int main()
                 auto eq = bm.equalities_matrix();
                 int rows = eq.row_count();
 
-                int first_out_dim = out_dims;
+                int flow_dim = out_dims;
                 int k = 0;
 
                 for (int r = 0; r < rows; ++r)
@@ -107,9 +114,9 @@ int main()
                             int out_k = eq(r, out + in_dims).value().integer();
                             if (out_k)
                             {
-                                if (out < first_out_dim)
+                                if (out < flow_dim)
                                 {
-                                    first_out_dim = out;
+                                    flow_dim = out;
                                     k = in0_k;
                                 }
                                 break;
@@ -121,18 +128,51 @@ int main()
                 k = std::abs(k);
                 ks.push_back(k);
 
-                cout << name << "@" << first_out_dim << " = " << k << endl;
+                cout << name << "@" << flow_dim << " = " << k << endl;
+
+                flow_dims[name] = flow_dim;
 
                 return true;
             });
             return true;
         });
 
-        period = std::accumulate(ks.begin(), ks.end(), 1, lcm);
-        offset = *std::max_element(ks.begin(), ks.end());
+        common_period = std::accumulate(ks.begin(), ks.end(), 1, lcm);
 
-        cout << "period = " << period << endl;
-        cout << "offset = " << offset << endl;
+        // Offset
+
+        sched_in_domain.for_each( [&](map & m)
+        {
+            string name = m.id(isl::space::input).name;
+            int flow_dim = flow_dims[name];
+
+            auto space = m.get_space();
+            int in_dims = space.dimension(space::input);
+
+            // add constraint: iter[0] < 0
+            local_space cnstr_space(space);
+            auto dim0_idx = cnstr_space(space::input, 0);
+            m.add_constraint(dim0_idx < 0);
+            assert(!m.is_empty());
+
+            cout << name << " sched before start:" << endl;
+            printer.print(m);
+            cout << endl;
+
+            set s(m.wrapped());
+            auto flow_idx = s.get_space()(space::variable, in_dims + flow_dim);
+            int max_flow_idx = s.maximum(flow_idx).integer();
+            int offset = max_flow_idx + 1;
+
+            cout << name << " offset = " << offset << endl;
+
+            common_offset = std::max(common_offset, offset);
+
+            return true;
+        });
+
+        cout << "common period = " << common_period << endl;
+        cout << "common offset = " << common_offset << endl;
     }
 
 #if 1
@@ -140,14 +180,12 @@ int main()
     {
         using namespace isl;
 
-        auto sched_in_domain = sched_map.in_domain(domains);
-
         sched_in_domain.for_each( [&](map & m)
         {
            local_space cnstr_space(m.get_space());
            auto dim0 = cnstr_space(space::input, 0);
-           m.add_constraint(dim0 >= offset);
-           m.add_constraint(dim0 < (offset + period));
+           m.add_constraint(dim0 >= common_offset);
+           m.add_constraint(dim0 < (common_offset + common_period));
            period_sched = period_sched | m;
            return true;
         });
