@@ -162,11 +162,11 @@ public:
                  isl_dim_cst);
     }
 
-    basic_map in_domain( const basic_set & domain )
+    basic_map in_domain( const basic_set & domain ) const
     {
         return isl_basic_map_intersect_domain(copy(), domain.copy());
     }
-    basic_map in_range( const basic_set & range )
+    basic_map in_range( const basic_set & range ) const
     {
         return isl_basic_map_intersect_range(copy(), range.copy());
     }
@@ -242,11 +242,11 @@ public:
     {
         m_object = isl_map_coalesce(m_object);
     }
-    map in_domain( const set & domain )
+    map in_domain( const set & domain ) const
     {
         return isl_map_intersect_domain(copy(), domain.copy());
     }
-    map in_range( const set & range )
+    map in_range( const set & range ) const
     {
         return isl_map_intersect_range(copy(), range.copy());
     }
@@ -353,11 +353,11 @@ public:
     {
         return isl_union_map_extract_map(get(), spc.copy());
     }
-    union_map in_domain( const union_set & domain )
+    union_map in_domain( const union_set & domain ) const
     {
         return isl_union_map_intersect_domain(copy(), domain.copy());
     }
-    union_map in_range( const union_set & range )
+    union_map in_range( const union_set & range ) const
     {
         return isl_union_map_intersect_range(copy(), range.copy());
     }
@@ -424,6 +424,14 @@ union_map operator& (const union_map & lhs, const union_map & rhs)
     return isl_union_map_intersect(lhs.copy(), rhs.copy());
 }
 
+inline
+map operator| (const map &lhs, const map & rhs)
+{
+    auto u = isl_map_union(lhs.copy(), rhs.copy());
+    if (!u)
+        throw error();
+    return u;
+}
 
 inline
 union_map operator| (const union_map &lhs, const union_map & rhs)
