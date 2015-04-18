@@ -349,7 +349,7 @@ public:
     {
         return isl_union_map_wrap(copy());
     }
-    map map_for( space & spc ) const
+    map map_for( const space & spc ) const
     {
         return isl_union_map_extract_map(get(), spc.copy());
     }
