@@ -187,14 +187,14 @@ public:
         return isl_set_is_empty(get());
     }
 
-    value minimum( const expression & expr )
+    value minimum( const expression & expr ) const
     {
         isl_val *v = isl_set_min_val(get(), expr.get());
         if (!v)
             throw error("No solution.");
         return v;
     }
-    value maximum( const expression & expr )
+    value maximum( const expression & expr ) const
     {
         isl_val *v = isl_set_max_val(get(), expr.get());
         if (!v)
