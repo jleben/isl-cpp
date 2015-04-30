@@ -341,6 +341,14 @@ public:
     {
         return isl_union_map_is_empty(get());
     }
+    union_set range() const
+    {
+        return isl_union_map_range(copy());
+    }
+    union_set domain() const
+    {
+        return isl_union_map_domain(copy());
+    }
     union_map inverse() const
     {
         return union_map( isl_union_map_reverse(copy()) );
