@@ -90,6 +90,16 @@ public:
         return isl_aff_get_local_space(get());
     }
 
+    bool is_constant() const
+    {
+        return isl_aff_is_cst(get());
+    }
+
+    isl::value constant() const
+    {
+        return isl_aff_get_constant_val(get());
+    }
+
 private:
     static void wrap_space(local_space & spc,
                            space::dimension_type & type, unsigned & index )
@@ -131,6 +141,12 @@ template <typename T> inline
 expression operator+( const T & lhs, const expression & rhs )
 {
     return rhs + lhs;
+}
+
+inline
+expression operator-( const expression & e)
+{
+    return isl_aff_neg(e.copy());
 }
 
 inline

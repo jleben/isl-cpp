@@ -290,6 +290,13 @@ private:
 };
 
 inline
+set operator!( const set & s )
+{
+    isl_set *x = isl_set_complement(s.copy());
+    return set(x);
+}
+
+inline
 set operator&( const set & lhs, const set & rhs )
 {
     isl_set *x = isl_set_intersect(lhs.copy(), rhs.copy());
