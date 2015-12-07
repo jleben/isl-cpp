@@ -372,6 +372,22 @@ public:
     {
         return isl_local_space_dim(get(), (isl_dim_type) type );
     }
+#if 0
+    bool is_param_space() const
+    {
+        return isl_local_space_is_params(get());
+    }
+#endif
+    bool is_set_space() const
+    {
+        return isl_local_space_is_set(get());
+    }
+#if 0
+    bool is_map_space() const
+    {
+        return !is_param_space() && !is_set_space();
+    }
+#endif
 
     bool is_wrapping() const
     {
