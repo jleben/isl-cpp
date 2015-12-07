@@ -65,8 +65,12 @@ public:
     expression value( const local_space & spc,
                       const value & val )
     {
+        isl_local_space *ls = spc.copy();
+        if (!isl_local_space_is_set(ls))
+            ls = isl_local_space_wrap(ls);
+
         // FIXME: use isl_aff_val_on_domain when available
-        isl_aff *expr = isl_aff_zero_on_domain(spc.copy());
+        isl_aff *expr = isl_aff_zero_on_domain(ls);
         expr = isl_aff_set_constant_val(expr, val.copy());
         return expr;
     }
@@ -74,8 +78,12 @@ public:
     static
     expression value( const local_space & spc, int i )
     {
+        isl_local_space *ls = spc.copy();
+        if (!isl_local_space_is_set(ls))
+            ls = isl_local_space_wrap(ls);
+
         // FIXME: use isl_aff_val_on_domain when available
-        isl_aff *expr = isl_aff_zero_on_domain(spc.copy());
+        isl_aff *expr = isl_aff_zero_on_domain(ls);
         expr = isl_aff_set_constant_si(expr, i);
         return expr;
     }
