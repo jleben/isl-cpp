@@ -112,6 +112,11 @@ public:
     {
         return isl_basic_map_universe(s.copy());
     }
+    static basic_map identity( const space & in, const space & out )
+    {
+        auto map_space = isl_space_map_from_domain_and_range(in.copy(), out.copy());
+        return isl_basic_map_identity(map_space);
+    }
     space get_space() const
     {
         return space( isl_basic_map_get_space(get()) );
@@ -191,6 +196,11 @@ public:
     static map universe( const space & s )
     {
         return isl_map_universe(s.copy());
+    }
+    static map identity( const space & in, const space & out )
+    {
+        auto map_space = isl_space_map_from_domain_and_range(in.copy(), out.copy());
+        return isl_map_identity(map_space);
     }
     space get_space() const
     {
