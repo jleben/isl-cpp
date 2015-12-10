@@ -132,6 +132,16 @@ public:
                 (m_object, (isl_dim_type) t, i, n);
     }
     basic_map unwrapped();
+
+    static bool are_disjoint( const basic_set & a, const basic_set & b )
+    {
+        return isl_basic_set_is_disjoint(a.get(), b.get());
+    }
+
+    bool is_disjoint(const basic_set & b) const
+    {
+        return are_disjoint(*this, b);
+    }
 };
 
 class set : public object<isl_set>
@@ -239,6 +249,16 @@ public:
         if (!p)
             throw error("No single point.");
         return p;
+    }
+
+    static bool are_disjoint( const set & a, const set & b )
+    {
+        return isl_set_is_disjoint(a.get(), b.get());
+    }
+
+    bool is_disjoint(const set & b) const
+    {
+        return are_disjoint(*this, b);
     }
 };
 
@@ -355,6 +375,18 @@ inline
 union_set operator* ( const union_set & lhs, const union_set & rhs )
 {
     return isl_union_set_product(lhs.copy(), rhs.copy());
+}
+
+inline
+bool operator==( const basic_set & lhs, const basic_set & rhs)
+{
+    return isl_basic_set_is_equal(lhs.get(), rhs.get());
+}
+
+inline
+bool operator==( const set & lhs, const set & rhs)
+{
+    return isl_set_is_equal(lhs.get(), rhs.get());
 }
 
 template <> inline
