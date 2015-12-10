@@ -94,7 +94,7 @@ class basic_set : public object<isl_basic_set>
 {
 public:
     basic_set( isl_basic_set * ptr ): object( ptr ) {}
-    basic_set( space & spc ):
+    basic_set( const space & spc ):
         object(spc.ctx(), isl_basic_set_empty(spc.copy()))
     {}
     basic_set( const space & spc,
@@ -138,7 +138,7 @@ class set : public object<isl_set>
 {
 public:
     set( isl_set * ptr ): object(ptr) {}
-    set( space & spc ):
+    set( const space & spc ):
         object(spc.ctx(), isl_set_empty(spc.copy()))
     {}
     set( const basic_set & bset ):
@@ -245,7 +245,7 @@ public:
     union_set( const context & ctx ):
         object(ctx, isl_union_set_empty(isl_space_params_alloc(ctx.get(),0)))
     {}
-    union_set( space & param_space ):
+    union_set( const space & param_space ):
         object(param_space.ctx(), isl_union_set_empty(param_space.copy()))
     {}
     union_set( context & ctx, const string & text ):
