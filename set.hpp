@@ -173,6 +173,10 @@ public:
         if (c_id)
             m_object = isl_set_set_tuple_id(get(), c_id);
     }
+    void clear_id()
+    {
+        m_object = isl_set_reset_tuple_id(m_object);
+    }
     string name() const
     {
         return isl_set_get_tuple_name(get());
