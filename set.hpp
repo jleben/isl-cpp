@@ -379,6 +379,18 @@ union_set operator* ( const union_set & lhs, const union_set & rhs )
 }
 
 inline
+set operator- (const set & lhs, const set & rhs)
+{
+    return isl_set_subtract(lhs.copy(), rhs.copy());
+}
+
+inline
+union_set operator- (const union_set & lhs, const union_set & rhs)
+{
+    return isl_union_set_subtract(lhs.copy(), rhs.copy());
+}
+
+inline
 bool operator==( const basic_set & lhs, const basic_set & rhs)
 {
     return isl_basic_set_is_equal(lhs.get(), rhs.get());
