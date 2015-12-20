@@ -206,7 +206,6 @@ public:
     {
         return space( isl_map_get_space(get()) );
     }
-#if 0
     space domain_space()
     {
         return space( isl_space_domain_map(isl_map_get_space(get())) );
@@ -215,7 +214,6 @@ public:
     {
         return space( isl_space_range_map(isl_map_get_space(get())) );
     }
-#endif
     set range() const
     {
         return isl_map_range(copy());
