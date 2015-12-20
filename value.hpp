@@ -62,6 +62,9 @@ public:
     long denominator() const { return isl_val_get_den_si(get()); }
     double real() const { return isl_val_get_d(get()); }
     bool is_integer() const { return isl_val_is_int(get()); }
+    bool is_infinity() const { return is_pos_infinity() || is_neg_infinity(); }
+    bool is_pos_infinity() const { return isl_val_is_infty(get()); }
+    bool is_neg_infinity() const { return isl_val_is_neginfty(get()); }
     long integer() const { assert(is_integer()); return numerator(); }
 };
 
