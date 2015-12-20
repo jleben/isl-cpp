@@ -31,6 +31,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "printer.hpp"
 
 #include <isl/set.h>
+#include <isl/union_set.h>
 #include <isl/ilp.h>
 
 namespace isl {
@@ -304,12 +305,12 @@ public:
 
 private:
     template <typename F>
-    static int for_each_helper(isl_set *set_ptr, void *data_ptr)
+    static isl_stat for_each_helper(isl_set *set_ptr, void *data_ptr)
     {
         auto f_ptr = reinterpret_cast<F*>(data_ptr);
         set s(set_ptr);
         bool result = (*f_ptr)(s);
-        return result ? 0 : -1;
+        return result ? isl_stat_ok : isl_stat_error;
     }
 };
 

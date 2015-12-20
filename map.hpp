@@ -315,12 +315,12 @@ public:
 
 private:
     template <typename F>
-    static int for_each_helper(isl_basic_map *basic_map_ptr, void *data_ptr)
+    static isl_stat for_each_helper(isl_basic_map *basic_map_ptr, void *data_ptr)
     {
         auto f_ptr = reinterpret_cast<F*>(data_ptr);
         basic_map m(basic_map_ptr);
         bool result = (*f_ptr)(m);
-        return result ? 0 : -1;
+        return result ? isl_stat_ok : isl_stat_error;
     }
 };
 
@@ -404,12 +404,12 @@ public:
     }
 private:
     template <typename F>
-    static int for_each_helper(isl_map *map_ptr, void *data_ptr)
+    static isl_stat for_each_helper(isl_map *map_ptr, void *data_ptr)
     {
         auto f_ptr = reinterpret_cast<F*>(data_ptr);
         map m(map_ptr);
         bool result = (*f_ptr)(m);
-        return result ? 0 : -1;
+        return result ? isl_stat_ok : isl_stat_error;
     }
 };
 
