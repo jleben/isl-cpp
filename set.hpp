@@ -293,7 +293,7 @@ public:
 
     union_map unwrapped();
 
-    set set_for( space & spc ) const
+    set set_for( const space & spc ) const
     {
         return isl_union_set_extract_set(get(), spc.copy());
     }
