@@ -79,6 +79,7 @@ public:
     };
 
     matrix(isl_mat *ptr): object(ptr) {}
+    // Does not initialize!
     matrix( const context & ctx, unsigned rows, unsigned columns ):
         object(ctx, isl_mat_alloc(ctx.get(), rows, columns))
     {}
