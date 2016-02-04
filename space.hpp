@@ -189,6 +189,11 @@ public:
         return space( isl_space_map_from_domain_and_range(domain.copy(), range.copy()) );
     }
 
+    isl::context get_context() const
+    {
+        return isl_space_get_ctx(get());
+    }
+
     expression operator()(dimension_type type, int index);
 
 #if 0
