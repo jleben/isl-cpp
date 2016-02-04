@@ -108,6 +108,11 @@ public:
         return isl_aff_get_constant_val(get());
     }
 
+    isl::value coefficient(space::dimension_type type, int index)
+    {
+        return isl_aff_get_coefficient_val(get(), (isl_dim_type)type, index);
+    }
+
 private:
     static void wrap_space(local_space & spc,
                            space::dimension_type & type, unsigned & index )
