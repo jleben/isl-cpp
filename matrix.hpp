@@ -94,6 +94,9 @@ public:
             }
         }
     }
+
+    context get_context() const { return isl_mat_get_ctx(get()); }
+
     int row_count() const { return isl_mat_rows(get()); }
     int column_count() const { return isl_mat_cols(get()); }
 
@@ -115,6 +118,32 @@ public:
     matrix nullspace() const
     {
         return right_kernel();
+    }
+
+    static matrix concatenate_vertically(const matrix & a, const matrix & b)
+    {
+        if (a.column_count() != b.column_count())
+            throw error("Matrices do not have equal number of columns");
+
+        auto result = isl::matrix(a.get_context(),
+                                  a.row_count() + b.row_count(),
+                                  a.column_count());
+
+        for (int row = 0; row < a.row_count(); ++row)
+        {
+            for (int col = 0; col < a.column_count(); ++col)
+            {
+                result(row,col) = a(row,col).value();
+            }
+        }
+        for (int row = 0; row < b.row_count(); ++row)
+        {
+            for (int col = 0; col < b.column_count(); ++col)
+            {
+                result(a.row_count() + row, col) = b(row,col).value();
+            }
+        }
+        return result;
     }
 };
 
