@@ -244,6 +244,16 @@ public:
 
     map unwrapped();
 
+    set parameters() const
+    {
+        return isl_set_params(copy());
+    }
+
+    bool is_singleton() const
+    {
+        return isl_set_is_singleton(get());
+    }
+
     point single_point() const
     {
         isl_point *p = isl_set_sample_point(copy());

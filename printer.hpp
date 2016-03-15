@@ -32,6 +32,16 @@ namespace isl {
 class printer
 {
 public:
+    enum format
+    {
+        isl_format = ISL_FORMAT_ISL,
+        c_format = ISL_FORMAT_C,
+        omega_format = ISL_FORMAT_OMEGA,
+        polylib_format = ISL_FORMAT_POLYLIB,
+        ext_polylib_format = ISL_FORMAT_EXT_POLYLIB,
+        latex_format = ISL_FORMAT_LATEX
+    };
+
     printer(const context & ctx):
         m_ctx(ctx)
     {
@@ -46,6 +56,16 @@ public:
     }
 
     isl_printer *get() const { return m_printer; }
+
+    format current_format() const
+    {
+        return (format) isl_printer_get_output_format(m_printer);
+    }
+
+    void set_format(format f)
+    {
+        m_printer = isl_printer_set_output_format(m_printer, f);
+    }
 
     template <typename T>
     void print( const T & );

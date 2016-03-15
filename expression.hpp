@@ -232,6 +232,30 @@ expression space::operator()(dimension_type type, int index)
 }
 
 inline
+expression space::param(int index)
+{
+    return expression::variable(local_space(*this), isl::space::parameter, index);
+}
+
+inline
+expression space::var(int index)
+{
+    return expression::variable(local_space(*this), isl::space::variable, index);
+}
+
+inline
+expression space::in(int index)
+{
+    return expression::variable(local_space(*this), isl::space::input, index);
+}
+
+inline
+expression space::out(int index)
+{
+    return expression::variable(local_space(*this), isl::space::output, index);
+}
+
+inline
 expression local_space::operator()(space::dimension_type type, int index)
 {
     return expression::variable(*this, type, index);

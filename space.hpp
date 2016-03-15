@@ -71,6 +71,10 @@ public:
     tuple(int size): elements(size) {}
     tuple(const string & name, int size): id(name), elements(size) {}
     tuple(const identifier & id, int size): id(id), elements(size) {}
+    tuple(const vector<string> & elem_names) {
+        for (const auto & name : elem_names)
+            elements.push_back(identifier(name));
+    }
     int size() const { return elements.size(); }
     identifier id;
     vector<identifier> elements;
@@ -118,26 +122,26 @@ public:
 
     space(isl_space *ptr): object(ptr) {}
 
-    space( context & ctx, const parameter_tuple & params ):
+    space( const context & ctx, const parameter_tuple & params ):
         object(ctx, isl_space_params_alloc(ctx.get(), params.size()))
     {
         set_identifiers(parameter, params);
     }
 
-    space( context & ctx, const tuple & params, const tuple & vars ):
+    space( const context & ctx, const tuple & params, const tuple & vars ):
         object(ctx, isl_space_set_alloc(ctx.get(), params.size(), vars.size()))
     {
         set_identifiers(parameter, params);
         set_identifiers(variable, vars);
     }
 
-    space( context & ctx, const set_tuple & vars ):
+    space( const context & ctx, const set_tuple & vars ):
         object(ctx, isl_space_set_alloc(ctx.get(), 0, vars.size()))
     {
         set_identifiers(variable, vars);
     }
 
-    space( context & ctx, const tuple & params,
+    space( const context & ctx, const tuple & params,
            const tuple & in, const tuple & out ):
         object(ctx, isl_space_alloc(ctx.get(), params.size(), in.size(), out.size()))
     {
@@ -146,21 +150,21 @@ public:
         set_identifiers(output, out);
     }
 
-    space( context & ctx, const input_tuple & in, const output_tuple & out ):
-      object(ctx, isl_space_alloc(ctx.get(), 0, in.size(), out.size()))
-  {
-      set_identifiers(input, in);
-      set_identifiers(output, out);
-  }
+    space( const context & ctx, const input_tuple & in, const output_tuple & out ):
+        object(ctx, isl_space_alloc(ctx.get(), 0, in.size(), out.size()))
+    {
+        set_identifiers(input, in);
+        set_identifiers(output, out);
+    }
 
-    static space for_parameters( context & ctx, int param_count )
+    static space for_parameters( const context & ctx, int param_count )
     {
         isl_space *s =
                 isl_space_params_alloc(ctx.get(), param_count);
-        return space(ctx, s);
+        return space(s);
     }
 
-    static space for_set( context & ctx,
+    static space for_set( const context & ctx,
                           int param_count,
                           int dim )
     {
@@ -168,10 +172,10 @@ public:
                 isl_space_set_alloc(ctx.get(),
                                     param_count,
                                     dim);
-        return space(ctx, s);
+        return space(s);
     }
 
-    static space for_map( context & ctx,
+    static space for_map( const context & ctx,
                           int param_count,
                           int in_dim,
                           int out_dim )
@@ -181,7 +185,7 @@ public:
                                 param_count,
                                 in_dim,
                                 out_dim);
-        return space(ctx, s);
+        return space(s);
     }
 
     static space from(const space & domain, const space & range)
@@ -195,6 +199,10 @@ public:
     }
 
     expression operator()(dimension_type type, int index);
+    expression param(int index);
+    expression var(int index);
+    expression in(int index);
+    expression out(int index);
 
 #if 0
     space range()
@@ -247,7 +255,12 @@ public:
         m_object = isl_space_set_tuple_name(m_object,
                                             (isl_dim_type) type, name.c_str());
     }
-
+    void set_name( dimension_type type, unsigned pos, const string & name )
+    {
+        m_object = isl_space_set_dim_name(m_object,
+                                          (isl_dim_type) type,
+                                          pos, name.c_str());
+    }
     bool is_params() const
     {
         return isl_space_is_params(get());

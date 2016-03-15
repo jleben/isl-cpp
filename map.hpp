@@ -266,6 +266,12 @@ public:
     {
         return isl_map_apply_range( arg.copy(), copy() );
     }
+    map & subtract (const map & rhs)
+    {
+        m_object = isl_map_subtract(m_object, rhs.copy());
+        return *this;
+    }
+
     void map_domain_through( const map & other )
     {
         m_object = isl_map_apply_domain(m_object, other.copy());
@@ -286,6 +292,10 @@ public:
         isl_id *c_id = id.c_id(m_ctx.get());
         if (c_id)
             m_object = isl_map_set_tuple_id(get(), (isl_dim_type)type, c_id);
+    }
+    void set_name( space::dimension_type type, const string & name )
+    {
+        m_object = isl_map_set_tuple_name(get(), (isl_dim_type)type, name.c_str());
     }
     string name( space::dimension_type type )
     {
@@ -393,6 +403,12 @@ public:
     union_map operator() ( const union_map & arg ) const
     {
         return isl_union_map_apply_range( arg.copy(), copy() );
+    }
+
+    union_map & subtract(const union_map & rhs)
+    {
+        m_object = isl_union_map_subtract(m_object, rhs.copy());
+        return *this;
     }
 
     template <typename F>
