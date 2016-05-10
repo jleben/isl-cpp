@@ -30,6 +30,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "printer.hpp"
 
 #include <isl/map.h>
+#include <iostream>
 
 namespace isl {
 
@@ -271,6 +272,10 @@ public:
         m_object = isl_map_subtract(m_object, rhs.copy());
         return *this;
     }
+    map cross( const map & rhs )
+    {
+        return isl_map_product(copy(), rhs.copy());
+    }
 
     void map_domain_through( const map & other )
     {
@@ -501,6 +506,24 @@ template <> inline
 void printer::print<union_map>( const union_map & m )
 {
     m_printer = isl_printer_print_union_map(m_printer, m.get());
+}
+
+template <> inline
+void printer::print_each_in<map>(const map & u)
+{
+    u.for_each([this](const basic_map & m){
+        print(m); std::cout << std::endl;
+        return true;
+    });
+}
+
+template <> inline
+void printer::print_each_in<union_map>(const union_map & u)
+{
+    u.for_each([this](const map & m){
+        print(m); std::cout << std::endl;
+        return true;
+    });
 }
 
 }

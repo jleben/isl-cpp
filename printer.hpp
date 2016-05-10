@@ -70,6 +70,9 @@ public:
     template <typename T>
     void print( const T & );
 
+    template <typename T>
+    void print_each_in(const T &);
+
 private:
     isl_printer *m_printer;
     context m_ctx;
