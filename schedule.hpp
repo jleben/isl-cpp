@@ -23,6 +23,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "context.hpp"
 #include "object.hpp"
+#include "map.hpp"
 
 #include <isl/schedule.h>
 
@@ -49,6 +50,10 @@ class schedule : public object<isl_schedule>
 {
 public:
     schedule( isl_schedule * ptr ): object( ptr ) {}
+    union_map map() const
+    {
+        return isl_schedule_get_map(get());
+    }
 };
 
 }
