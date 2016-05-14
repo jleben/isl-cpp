@@ -176,6 +176,16 @@ public:
     {
         return isl_basic_map_intersect_range(copy(), range.copy());
     }
+    basic_map & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_basic_map_upper_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
+    }
+    basic_map & limit_below(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_basic_map_lower_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
+    }
 };
 
 class map : public object<isl_map>
@@ -270,6 +280,16 @@ public:
     map & subtract (const map & rhs)
     {
         m_object = isl_map_subtract(m_object, rhs.copy());
+        return *this;
+    }
+    map & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_map_upper_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
+    }
+    map & limit_below(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_map_lower_bound_si(m_object, (isl_dim_type)dim, pos, value);
         return *this;
     }
     map cross( const map & rhs )

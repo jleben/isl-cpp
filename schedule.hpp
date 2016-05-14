@@ -54,6 +54,11 @@ public:
     {
         return isl_schedule_get_map(get());
     }
+    schedule & intersect_domain(const union_set & domain)
+    {
+        m_object = isl_schedule_intersect_domain(m_object, domain.copy());
+        return *this;
+    }
 };
 
 }

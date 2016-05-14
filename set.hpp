@@ -143,6 +143,18 @@ public:
     {
         return are_disjoint(*this, b);
     }
+#if 0 // Not available?
+    basic_set & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_basic_set_upper_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
+    }
+    basic_set & limit_below(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_basic_set_lower_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
+    }
+#endif
 };
 
 class set : public object<isl_set>
@@ -240,6 +252,17 @@ public:
     {
         m_object = isl_set_drop_constraints_involving_dims
                 (m_object, (isl_dim_type) t, i, n);
+    }
+
+    set & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_set_upper_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
+    }
+    set & limit_below(isl::space::dimension_type dim, unsigned pos, int value)
+    {
+        m_object = isl_set_lower_bound_si(m_object, (isl_dim_type)dim, pos, value);
+        return *this;
     }
 
     map unwrapped();
@@ -428,6 +451,14 @@ void printer::print<union_set>( const union_set & s )
     m_printer = isl_printer_print_union_set(m_printer, s.get());
 }
 
+template <> inline
+void printer::print_each_in<union_set>(const union_set & us)
+{
+    us.for_each([this](const set & s){
+        print(s); std::cout << std::endl;
+        return true;
+    });
+}
 }
 
 
