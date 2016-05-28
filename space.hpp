@@ -203,6 +203,7 @@ public:
     expression var(int index);
     expression in(int index);
     expression out(int index);
+    expression val(int value);
 
 #if 0
     space range()
