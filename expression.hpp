@@ -47,6 +47,23 @@ struct object_behavior<isl_aff>
     }
 };
 
+template<>
+struct object_behavior<isl_multi_aff>
+{
+    static isl_multi_aff * copy( isl_multi_aff * obj )
+    {
+        return isl_multi_aff_copy(obj);
+    }
+    static void destroy( isl_multi_aff *obj )
+    {
+        isl_multi_aff_free(obj);
+    }
+    static isl_ctx * get_context( isl_multi_aff * obj )
+    {
+        return isl_multi_aff_get_ctx(obj);
+    }
+};
+
 class expression : public object<isl_aff>
 {
 public:
@@ -88,6 +105,11 @@ public:
         return expr;
     }
 
+    space domain_space() const
+    {
+        return isl_aff_get_domain_space(get());
+    }
+
     space get_space() const
     {
         return isl_aff_get_space(get());
@@ -108,7 +130,7 @@ public:
         return isl_aff_get_constant_val(get());
     }
 
-    isl::value coefficient(space::dimension_type type, int index)
+    isl::value coefficient(space::dimension_type type, int index) const
     {
         return isl_aff_get_coefficient_val(get(), (isl_dim_type)type, index);
     }
@@ -132,6 +154,57 @@ private:
             }
             spc = spc.wrapped();
         }
+    }
+};
+
+class multi_expression : public object<isl_multi_aff>
+{
+public:
+    multi_expression(isl_multi_aff * p): object(p) {}
+
+    multi_expression(const expression & e):
+        object(isl_multi_aff_from_aff(e.copy()))
+    {}
+
+    static multi_expression zero(const space & spc, int count)
+    {
+        auto in_space = spc;
+        if (in_space.is_map())
+            in_space = in_space.wrapped();
+
+        auto out_space = space(spc.get_context(), set_tuple(count));
+
+        auto expr_space = space::from(in_space, out_space);
+        return isl_multi_aff_zero(expr_space.copy());
+    }
+
+    static multi_expression identity(const space & spc)
+    {
+        auto in_space = spc;
+        if (in_space.is_map())
+            in_space = in_space.wrapped();
+
+        auto n_dim = in_space.dimension(space::variable);
+        auto out_space = space(spc.get_context(), set_tuple(n_dim));
+
+        auto expr_space = space::from(in_space, out_space);
+        return isl_multi_aff_identity(expr_space.copy());
+    }
+
+    expression at(int i) const
+    {
+        return isl_multi_aff_get_aff(get(), i);
+    }
+
+    void set(int i, const expression & e)
+    {
+        m_object = isl_multi_aff_set_aff(m_object, i, e.copy());
+    }
+
+    int size() const
+    {
+        space s = isl_multi_aff_get_space(m_object);
+        return s.dimension(isl::space::output);
     }
 };
 
@@ -207,10 +280,18 @@ expression operator*( int lhs_int, const expression & rhs )
     return rhs * lhs_int;
 }
 
+#if 0
 inline
-expression operator/ ( const expression & lhs, unsigned rhs_int )
+expression operator/ ( const expression & lhs, unsigned rhs_uint )
 {
-    return isl_aff_scale_down_ui(lhs.copy(), rhs_int);
+    return isl_aff_scale_down_ui(lhs.copy(), rhs_uint);
+}
+#endif
+
+inline
+expression operator/ ( const expression & lhs, const value & rhs )
+{
+    return isl_aff_scale_down_val(lhs.copy(), rhs.copy());
 }
 
 inline
@@ -223,6 +304,12 @@ template <> inline
 void printer::print<expression>( const expression & expr )
 {
     m_printer = isl_printer_print_aff(m_printer, expr.get());
+}
+
+template <> inline
+void printer::print<multi_expression>( const multi_expression & expr )
+{
+    m_printer = isl_printer_print_multi_aff(m_printer, expr.get());
 }
 
 inline
@@ -254,6 +341,13 @@ expression space::out(int index)
 {
     return expression::variable(local_space(*this), isl::space::output, index);
 }
+
+inline
+expression space::val(int v)
+{
+    return expression::value(local_space(*this), v);
+}
+
 
 inline
 expression local_space::operator()(space::dimension_type type, int index)
