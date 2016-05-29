@@ -126,6 +126,14 @@ public:
     {
         return isl_basic_map_get_local_space(get());
     }
+    basic_set range() const
+    {
+        return isl_basic_map_range(copy());
+    }
+    basic_set domain() const
+    {
+        return isl_basic_map_domain(copy());
+    }
     bool is_empty() const
     {
         return isl_basic_map_is_empty(get());

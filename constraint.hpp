@@ -74,6 +74,12 @@ public:
             c.unwrap_space();
         return c;
     }
+
+    bool is_equality() const
+    {
+        return isl_constraint_is_equality(get());
+    }
+
     void set_coefficient( space::dimension_type type, int pos, int val )
     {
         m_object = isl_constraint_set_coefficient_si
