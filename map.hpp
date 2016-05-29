@@ -444,6 +444,11 @@ public:
         return *this;
     }
 
+    void coalesce()
+    {
+        m_object = isl_union_map_coalesce(m_object);
+    }
+
     template <typename F>
     void for_each( F f ) const
     {

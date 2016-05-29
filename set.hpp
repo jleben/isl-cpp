@@ -294,6 +294,21 @@ public:
     {
         return are_disjoint(*this, b);
     }
+    template <typename F>
+    void for_each( F f ) const
+    {
+        isl_set_foreach_basic_set(get(), &for_each_basic_set_helper<F>, &f);
+    }
+
+private:
+    template <typename F>
+    static isl_stat for_each_basic_set_helper(isl_basic_set *bs_ptr, void *data_ptr)
+    {
+        auto f_ptr = reinterpret_cast<F*>(data_ptr);
+        basic_set bs(bs_ptr);
+        bool result = (*f_ptr)(bs);
+        return result ? isl_stat_ok : isl_stat_error;
+    }
 };
 
 class union_set : public object<isl_union_set>
