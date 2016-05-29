@@ -295,6 +295,19 @@ expression operator/ ( const expression & lhs, const value & rhs )
 }
 
 inline
+expression operator% ( const expression & lhs, const value & rhs )
+{
+    return isl_aff_mod_val(lhs.copy(), rhs.copy());
+}
+
+inline
+expression operator% ( const expression & lhs, int rhs_int )
+{
+    auto rhs = value(lhs.ctx(), rhs_int);
+    return lhs % rhs;
+}
+
+inline
 expression floor(const expression & e)
 {
     return isl_aff_floor(e.copy());
