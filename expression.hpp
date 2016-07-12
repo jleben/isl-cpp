@@ -166,29 +166,54 @@ public:
         object(isl_multi_aff_from_aff(e.copy()))
     {}
 
-    static multi_expression zero(const space & spc, int count)
+    static multi_expression zero(const isl::space & spc, int count)
     {
         auto in_space = spc;
         if (in_space.is_map())
             in_space = in_space.wrapped();
 
-        auto out_space = space(spc.get_context(), set_tuple(count));
+        auto out_space = isl::space(spc.get_context(), set_tuple(count));
 
-        auto expr_space = space::from(in_space, out_space);
+        auto expr_space = isl::space::from(in_space, out_space);
         return isl_multi_aff_zero(expr_space.copy());
     }
 
-    static multi_expression identity(const space & spc)
+    static multi_expression identity(const isl::space & spc)
     {
         auto in_space = spc;
         if (in_space.is_map())
             in_space = in_space.wrapped();
 
-        auto n_dim = in_space.dimension(space::variable);
-        auto out_space = space(spc.get_context(), set_tuple(n_dim));
+        auto n_dim = in_space.dimension(isl::space::variable);
+        auto out_space = isl::space(spc.get_context(), set_tuple(n_dim));
 
-        auto expr_space = space::from(in_space, out_space);
+        auto expr_space = isl::space::from(in_space, out_space);
         return isl_multi_aff_identity(expr_space.copy());
+    }
+
+    isl::space space() const
+    {
+        return isl_multi_aff_get_space(m_object);
+    }
+
+    isl::space domain_space() const
+    {
+        return isl_multi_aff_get_domain_space(m_object);
+    }
+
+    int size() const
+    {
+        return space().dimension(isl::space::output);
+    }
+
+    void insert_dims(isl::space::dimension_type type, unsigned i, unsigned n)
+    {
+        m_object = isl_multi_aff_insert_dims(m_object, (isl_dim_type)type, i, n);
+    }
+
+    void drop_dims(isl::space::dimension_type type, unsigned i, unsigned n)
+    {
+        m_object = isl_multi_aff_drop_dims(m_object, (isl_dim_type)type, i, n);
     }
 
     expression at(int i) const
@@ -199,12 +224,6 @@ public:
     void set(int i, const expression & e)
     {
         m_object = isl_multi_aff_set_aff(m_object, i, e.copy());
-    }
-
-    int size() const
-    {
-        space s = isl_multi_aff_get_space(m_object);
-        return s.dimension(isl::space::output);
     }
 };
 
@@ -292,6 +311,12 @@ inline
 expression operator/ ( const expression & lhs, const value & rhs )
 {
     return isl_aff_scale_down_val(lhs.copy(), rhs.copy());
+}
+
+inline
+expression operator/ ( const expression & lhs, int rhs )
+{
+    return lhs / value(lhs.ctx(), rhs);
 }
 
 inline

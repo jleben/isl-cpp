@@ -143,6 +143,15 @@ public:
     {
         return are_disjoint(*this, b);
     }
+
+    point single_point() const
+    {
+        isl_point *p = isl_basic_set_sample_point(copy());
+        if (!p)
+            throw error("No single point.");
+        return p;
+    }
+
 #if 0 // Not available?
     basic_set & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
     {

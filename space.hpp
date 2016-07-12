@@ -205,17 +205,17 @@ public:
     expression out(int index);
     expression val(int value);
 
-#if 0
+#if 1
     space range()
     {
         assert(isl_space_is_map(get()));
-        return isl_space_range_map(get());
+        return isl_space_range(copy());
     }
 
     space domain()
     {
         assert(isl_space_is_map(get()));
-        return isl_space_domain_map(get());
+        return isl_space_domain(copy());
     }
 #endif
     unsigned int dimension( dimension_type type ) const

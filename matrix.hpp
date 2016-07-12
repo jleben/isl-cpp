@@ -120,6 +120,34 @@ public:
         return right_kernel();
     }
 
+    void drop_column(int col)
+    {
+        int n_rows = row_count();
+        int n_cols = column_count() - 1;
+
+        auto result = isl_mat_alloc(ctx().get(),
+                                    n_rows, n_cols);
+
+        for (int r = 0; r < n_rows; ++r)
+        {
+            for (int c = 0; c < col; ++c)
+            {
+                auto val = isl_mat_get_element_val(get(), r, c);
+                result = isl_mat_set_element_val(result, r, c, val);
+            }
+
+            for (int c = col; c < n_cols; ++c)
+            {
+                auto val = isl_mat_get_element_val(get(), r, c+1);
+                result = isl_mat_set_element_val(result, r, c, val);
+            }
+        }
+
+        isl_mat_free(m_object);
+
+        m_object = result;
+    }
+
     static matrix concatenate_vertically(const matrix & a, const matrix & b)
     {
         if (a.column_count() != b.column_count())
