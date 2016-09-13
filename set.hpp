@@ -404,6 +404,18 @@ union_set operator&( const union_set & lhs, const union_set & rhs )
 {
     return isl_union_set_intersect(lhs.copy(), rhs.copy());
 }
+inline
+set & operator&=(set & lhs, const set & rhs )
+{
+    lhs = lhs & rhs;
+    return lhs;
+}
+inline
+union_set & operator&=(union_set & lhs, const union_set & rhs )
+{
+    lhs = lhs & rhs;
+    return lhs;
+}
 
 inline
 set operator|( const set & lhs, const set & rhs )
@@ -431,6 +443,18 @@ inline
 union_set operator| (const union_set &lhs, const basic_set & rhs)
 {
     return isl_union_set_union(lhs.copy(), isl_union_set_from_basic_set(rhs.copy()));
+}
+inline
+set & operator|=(set & lhs, const set & rhs )
+{
+    lhs = lhs | rhs;
+    return lhs;
+}
+inline
+union_set & operator|=(union_set & lhs, const union_set & rhs )
+{
+    lhs = lhs | rhs;
+    return lhs;
 }
 
 inline
