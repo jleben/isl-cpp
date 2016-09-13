@@ -135,6 +135,11 @@ public:
         return isl_aff_get_coefficient_val(get(), (isl_dim_type)type, index);
     }
 
+    bool involves(space::dimension_type type, int index) const
+    {
+        return isl_aff_involves_dims(get(), (isl_dim_type)type, index, 1);
+    }
+
 private:
     static void wrap_space(local_space & spc,
                            space::dimension_type & type, unsigned & index )
