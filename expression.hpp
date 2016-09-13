@@ -357,31 +357,31 @@ expression space::operator()(dimension_type type, int index)
 }
 
 inline
-expression space::param(int index)
+expression space::param(int index) const
 {
     return expression::variable(local_space(*this), isl::space::parameter, index);
 }
 
 inline
-expression space::var(int index)
+expression space::var(int index) const
 {
     return expression::variable(local_space(*this), isl::space::variable, index);
 }
 
 inline
-expression space::in(int index)
+expression space::in(int index) const
 {
     return expression::variable(local_space(*this), isl::space::input, index);
 }
 
 inline
-expression space::out(int index)
+expression space::out(int index) const
 {
     return expression::variable(local_space(*this), isl::space::output, index);
 }
 
 inline
-expression space::val(int v)
+expression space::val(int v) const
 {
     return expression::value(local_space(*this), v);
 }

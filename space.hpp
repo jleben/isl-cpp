@@ -199,11 +199,11 @@ public:
     }
 
     expression operator()(dimension_type type, int index);
-    expression param(int index);
-    expression var(int index);
-    expression in(int index);
-    expression out(int index);
-    expression val(int value);
+    expression param(int index) const;
+    expression var(int index) const;
+    expression in(int index) const;
+    expression out(int index) const;
+    expression val(int value) const;
 
 #if 1
     space range()
