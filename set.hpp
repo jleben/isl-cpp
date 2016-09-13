@@ -123,6 +123,10 @@ public:
     {
         return isl_basic_set_is_empty(get());
     }
+    void add_dimensions( space::dimension_type t, unsigned n=1 )
+    {
+        m_object = isl_basic_set_add_dims(m_object, (isl_dim_type)t, n);
+    }
     void add_constraint( const constraint & c)
     {
         m_object = isl_basic_set_add_constraint(m_object, c.copy());
@@ -221,6 +225,11 @@ public:
     bool is_empty() const
     {
         return isl_set_is_empty(get());
+    }
+
+    void add_dimensions( space::dimension_type t, unsigned n=1 )
+    {
+        m_object = isl_set_add_dims(m_object, (isl_dim_type) t, n);
     }
 
     value minimum( const expression & expr ) const

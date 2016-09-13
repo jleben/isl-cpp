@@ -223,6 +223,11 @@ public:
         return isl_space_dim(get(), (isl_dim_type) type );
     }
 
+    void add_dimensions( space::dimension_type t, unsigned n=1 )
+    {
+        m_object = isl_space_add_dims(m_object, (isl_dim_type) t, n );
+    }
+
     void insert_dimensions( dimension_type type, unsigned pos, unsigned n=1)
     {
         m_object = isl_space_insert_dims(m_object,
