@@ -127,6 +127,10 @@ public:
     {
         m_object = isl_basic_set_add_dims(m_object, (isl_dim_type)t, n);
     }
+    void project_out_dimensions( space::dimension_type t, unsigned i, unsigned n=1 )
+    {
+        m_object = isl_basic_set_project_out(m_object, (isl_dim_type)t, i, n);
+    }
     void add_constraint( const constraint & c)
     {
         m_object = isl_basic_set_add_constraint(m_object, c.copy());
@@ -230,6 +234,10 @@ public:
     void add_dimensions( space::dimension_type t, unsigned n=1 )
     {
         m_object = isl_set_add_dims(m_object, (isl_dim_type) t, n);
+    }
+    void project_out_dimensions( space::dimension_type t, unsigned i, unsigned n=1 )
+    {
+        m_object = isl_set_project_out(m_object, (isl_dim_type)t, i, n);
     }
 
     value minimum( const expression & expr ) const
