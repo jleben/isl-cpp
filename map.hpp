@@ -499,6 +499,18 @@ union_map operator& (const union_map & lhs, const union_map & rhs)
 {
     return isl_union_map_intersect(lhs.copy(), rhs.copy());
 }
+inline
+map & operator&=(map & lhs, const map & rhs )
+{
+    lhs = lhs & rhs;
+    return lhs;
+}
+inline
+union_map & operator&=(union_map & lhs, const union_map & rhs )
+{
+    lhs = lhs & rhs;
+    return lhs;
+}
 
 inline
 map operator| (const map &lhs, const map & rhs)
@@ -523,6 +535,18 @@ inline
 union_map operator| (const union_map &lhs, const basic_map & rhs)
 {
     return isl_union_map_union(lhs.copy(), isl_union_map_from_basic_map(rhs.copy()));
+}
+inline
+map & operator|=(map & lhs, const map & rhs )
+{
+    lhs = lhs | rhs;
+    return lhs;
+}
+inline
+union_map & operator|=(union_map & lhs, const union_map & rhs )
+{
+    lhs = lhs | rhs;
+    return lhs;
 }
 
 inline
