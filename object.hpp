@@ -40,6 +40,7 @@ public:
 
     const context & ctx() const { return m_ctx; }
 
+    bool is_valid() const { return m_object != nullptr; }
     T * get() const { return m_object; }
     T * copy() const { return object_behavior<T>::copy(m_object); }
 
