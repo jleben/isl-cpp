@@ -150,6 +150,10 @@ public:
     {
         return isl_basic_map_wrap(copy());
     }
+    void project_out_dimensions( space::dimension_type type, unsigned i, unsigned n=1 )
+    {
+        m_object = isl_basic_map_project_out(m_object, (isl_dim_type)type, i, n);
+    }
     void add_constraint( const constraint & c )
     {
         m_object = isl_basic_map_add_constraint(m_object, c.copy());
@@ -343,6 +347,10 @@ public:
     void insert_dimensions( space::dimension_type type, unsigned pos, unsigned count )
     {
         m_object = isl_map_insert_dims(m_object, (isl_dim_type) type, pos, count);
+    }
+    void project_out_dimensions( space::dimension_type type, unsigned i, unsigned n=1 )
+    {
+        m_object = isl_map_project_out(m_object, (isl_dim_type)type, i, n);
     }
     void add_constraint( const constraint & c )
     {

@@ -123,6 +123,10 @@ public:
     {
         return isl_basic_set_is_empty(get());
     }
+    void insert_dimensions( space::dimension_type t, unsigned i, unsigned n=1 )
+    {
+        m_object = isl_basic_set_insert_dims(m_object, (isl_dim_type)t, i, n);
+    }
     void add_dimensions( space::dimension_type t, unsigned n=1 )
     {
         m_object = isl_basic_set_add_dims(m_object, (isl_dim_type)t, n);
