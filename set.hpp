@@ -119,6 +119,11 @@ public:
     {
         return space( isl_basic_set_get_space(get()) );
     }
+    isl::local_space local_space() const
+    {
+        return isl_basic_set_get_local_space(get());
+    }
+
     bool is_empty() const
     {
         return isl_basic_set_is_empty(get());
@@ -145,6 +150,16 @@ public:
                 (m_object, (isl_dim_type) t, i, n);
     }
     basic_map unwrapped();
+
+    basic_set lifted() const
+    {
+        return isl_basic_set_lift(copy());
+    }
+
+    basic_set flattened() const
+    {
+        return isl_basic_set_flatten(copy());
+    }
 
     static bool are_disjoint( const basic_set & a, const basic_set & b )
     {
@@ -199,6 +214,7 @@ public:
     {
         return space( isl_set_get_space(get()) );
     }
+
     unsigned dimensions() const
     {
         return isl_set_dim( get(), isl_dim_set );
@@ -297,6 +313,16 @@ public:
 
     map unwrapped();
 
+    set lifted() const
+    {
+        return isl_set_lift(copy());
+    }
+
+    set flattened() const
+    {
+        return isl_set_flatten(copy());
+    }
+
     set parameters() const
     {
         return isl_set_params(copy());
@@ -370,6 +396,11 @@ public:
     }
 
     union_map unwrapped();
+
+    union_set lifted() const
+    {
+        return isl_union_set_lift(copy());
+    }
 
     set set_for( const space & spc ) const
     {
