@@ -179,6 +179,14 @@ public:
         return p;
     }
 
+    value maximum( const expression & expr ) const
+    {
+        isl_val *v = isl_basic_set_max_val(get(), expr.get());
+        if (!v)
+            throw error("No solution.");
+        return v;
+    }
+
 #if 0 // Not available?
     basic_set & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
     {
