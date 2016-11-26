@@ -42,6 +42,12 @@ public:
         latex_format = ISL_FORMAT_LATEX
     };
 
+    enum yaml_style
+    {
+      yaml_block_style = ISL_YAML_STYLE_BLOCK,
+      yaml_flow_style = ISL_YAML_STYLE_FLOW
+    };
+
     printer(const context & ctx):
         m_ctx(ctx)
     {
@@ -65,6 +71,11 @@ public:
     void set_format(format f)
     {
         m_printer = isl_printer_set_output_format(m_printer, f);
+    }
+
+    void set_yaml_style(yaml_style s)
+    {
+      m_printer = isl_printer_set_yaml_style(m_printer, s);
     }
 
     template <typename T>
