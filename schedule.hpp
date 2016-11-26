@@ -24,6 +24,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "context.hpp"
 #include "object.hpp"
 #include "map.hpp"
+#include "printer.hpp"
 
 #include <isl/schedule.h>
 
@@ -60,6 +61,12 @@ public:
         return *this;
     }
 };
+
+template <> inline
+void printer::print<schedule>( const schedule & s )
+{
+    m_printer = isl_printer_print_schedule(m_printer, s.get());
+}
 
 }
 
