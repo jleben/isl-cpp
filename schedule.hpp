@@ -51,9 +51,17 @@ class schedule : public object<isl_schedule>
 {
 public:
     schedule( isl_schedule * ptr ): object( ptr ) {}
+    union_set domain() const
+    {
+      return isl_schedule_get_domain(get());
+    }
     union_map map() const
     {
         return isl_schedule_get_map(get());
+    }
+    union_map map_on_domain() const
+    {
+      return map().in_domain(domain());
     }
     schedule & intersect_domain(const union_set & domain)
     {
