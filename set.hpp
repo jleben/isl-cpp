@@ -123,6 +123,10 @@ public:
     {
         return isl_basic_set_get_local_space(get());
     }
+    unsigned dimensions() const
+    {
+        return isl_basic_set_dim( get(), isl_dim_set );
+    }
 
     bool is_empty() const
     {
