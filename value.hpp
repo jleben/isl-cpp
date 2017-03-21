@@ -66,6 +66,7 @@ public:
     bool is_pos_infinity() const { return isl_val_is_infty(get()); }
     bool is_neg_infinity() const { return isl_val_is_neginfty(get()); }
     long integer() const { assert(is_integer()); return numerator(); }
+    value operator-() const { return isl_val_neg(copy()); }
 };
 
 template<> inline
