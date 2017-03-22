@@ -419,6 +419,11 @@ public:
         return isl_union_set_lift(copy());
     }
 
+    union_set universe() const
+    {
+        return isl_union_set_universe(copy());
+    }
+
     set set_for( const space & spc ) const
     {
         return isl_union_set_extract_set(get(), spc.copy());

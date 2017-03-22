@@ -426,6 +426,10 @@ public:
     {
         return isl_union_map_wrap(copy());
     }
+    union_map universe() const
+    {
+        return isl_union_map_universe(copy());
+    }
     map map_for( const space & spc ) const
     {
         return isl_union_map_extract_map(get(), spc.copy());
