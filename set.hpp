@@ -344,6 +344,10 @@ public:
     {
         return isl_set_convex_hull(copy());
     }
+    basic_set simple_hull() const
+    {
+        return isl_set_simple_hull(copy());
+    }
 
     bool is_singleton() const
     {

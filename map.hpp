@@ -318,6 +318,10 @@ public:
     {
         return isl_map_convex_hull(copy());
     }
+    basic_map simple_hull() const
+    {
+        return isl_map_simple_hull(copy());
+    }
 
     void map_domain_through( const map & other )
     {
