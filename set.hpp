@@ -340,6 +340,11 @@ public:
         return isl_set_params(copy());
     }
 
+    basic_set convex_hull() const
+    {
+        return isl_set_convex_hull(copy());
+    }
+
     bool is_singleton() const
     {
         return isl_set_is_singleton(get());
