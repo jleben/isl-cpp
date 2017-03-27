@@ -202,6 +202,10 @@ public:
         m_object = isl_basic_map_lower_bound_si(m_object, (isl_dim_type)dim, pos, value);
         return *this;
     }
+    basic_map cross( const basic_map & rhs ) const
+    {
+        return isl_basic_map_product(copy(), rhs.copy());
+    }
 };
 
 class map : public object<isl_map>
