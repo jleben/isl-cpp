@@ -578,6 +578,15 @@ void printer::print<union_set>( const union_set & s )
 }
 
 template <> inline
+void printer::print_each_in<set>(const set & u)
+{
+    u.for_each([this](const basic_set & s){
+        print(s); std::cout << std::endl;
+        return true;
+    });
+}
+
+template <> inline
 void printer::print_each_in<union_set>(const union_set & us)
 {
     us.for_each([this](const set & s){
