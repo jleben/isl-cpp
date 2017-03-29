@@ -314,7 +314,7 @@ public:
         m_object = isl_map_lower_bound_si(m_object, (isl_dim_type)dim, pos, value);
         return *this;
     }
-    map cross( const map & rhs )
+    map cross( const map & rhs ) const
     {
         return isl_map_product(copy(), rhs.copy());
     }
