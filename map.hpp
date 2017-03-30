@@ -442,6 +442,13 @@ public:
     {
         return isl_union_map_extract_map(get(), spc.copy());
     }
+    map single_map() const
+    {
+        auto the_map = isl_map_from_union_map(copy());
+        if (!the_map)
+            throw error("No single map.");
+        return the_map;
+    }
     union_map in_domain( const union_set & domain ) const
     {
         return isl_union_map_intersect_domain(copy(), domain.copy());

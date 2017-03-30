@@ -432,6 +432,15 @@ public:
     {
         return isl_union_set_extract_set(get(), spc.copy());
     }
+
+    set single_set() const
+    {
+        auto the_set = isl_set_from_union_set(copy());
+        if (!the_set)
+            throw error("No single set.");
+        return the_set;
+    }
+
     template <typename F>
     void for_each( F f ) const
     {
