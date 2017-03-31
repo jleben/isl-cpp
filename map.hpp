@@ -142,6 +142,14 @@ public:
     {
         return isl_basic_map_is_single_valued(get());
     }
+    bool is_subset_of(const basic_map & other) const
+    {
+        return isl_basic_map_is_subset(get(), other.get());
+    }
+    bool is_strict_subset_of(const basic_map & other) const
+    {
+        return isl_basic_map_is_strict_subset(get(), other.get());
+    }
     basic_map inverse() const
     {
         return basic_map( isl_basic_map_reverse(copy()) );
@@ -262,6 +270,14 @@ public:
     bool is_empty() const
     {
         return isl_map_is_empty(get());
+    }
+    bool is_subset_of(const map & other) const
+    {
+        return isl_map_is_subset(get(), other.get());
+    }
+    bool is_strict_subset_of(const map & other) const
+    {
+        return isl_map_is_strict_subset(get(), other.get());
     }
     map inverse() const
     {
@@ -417,6 +433,14 @@ public:
     bool is_empty() const
     {
         return isl_union_map_is_empty(get());
+    }
+    bool is_subset_of(const union_map & other) const
+    {
+        return isl_union_map_is_subset(get(), other.get());
+    }
+    bool is_strict_subset_of(const union_map & other) const
+    {
+        return isl_union_map_is_strict_subset(get(), other.get());
     }
     union_set range() const
     {

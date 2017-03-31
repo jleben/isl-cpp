@@ -153,6 +153,7 @@ public:
         m_object = isl_basic_set_drop_constraints_involving_dims
                 (m_object, (isl_dim_type) t, i, n);
     }
+
     basic_map unwrapped();
 
     basic_set lifted() const
@@ -173,6 +174,11 @@ public:
     bool is_disjoint(const basic_set & b) const
     {
         return are_disjoint(*this, b);
+    }
+
+    bool is_subset_of(const basic_set & other) const
+    {
+        return isl_basic_set_is_subset(get(), other.get());
     }
 
     point single_point() const
@@ -261,6 +267,16 @@ public:
     bool is_empty() const
     {
         return isl_set_is_empty(get());
+    }
+
+    bool is_subset_of(const set & other) const
+    {
+        return isl_set_is_subset(get(), other.get());
+    }
+
+    bool is_strict_subset_of(const set & other) const
+    {
+        return isl_set_is_strict_subset(get(), other.get());
     }
 
     void add_dimensions( space::dimension_type t, unsigned n=1 )
@@ -414,6 +430,14 @@ public:
     bool is_empty() const
     {
         return isl_union_set_is_empty(get());
+    }
+    bool is_subset_of(const union_set & other) const
+    {
+        return isl_union_set_is_subset(get(), other.get());
+    }
+    bool is_strict_subset_of(const union_set & other) const
+    {
+        return isl_union_set_is_strict_subset(get(), other.get());
     }
 
     union_map unwrapped();
