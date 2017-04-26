@@ -368,7 +368,7 @@ public:
     {
         m_object = isl_map_set_tuple_name(get(), (isl_dim_type)type, name.c_str());
     }
-    string name( space::dimension_type type )
+    string name( space::dimension_type type ) const
     {
         return isl_map_get_tuple_name(get(), (isl_dim_type) type);
     }
