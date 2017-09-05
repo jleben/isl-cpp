@@ -214,6 +214,14 @@ public:
     {
         return isl_basic_map_product(copy(), rhs.copy());
     }
+    basic_map equate(int in_dim, int out_dim) const
+    {
+        return isl_basic_map_equate(copy(), isl_dim_in, in_dim, isl_dim_out, out_dim);
+    }
+    basic_set deltas() const
+    {
+        return isl_basic_map_deltas(copy());
+    }
 };
 
 class map : public object<isl_map>
@@ -341,6 +349,14 @@ public:
     basic_map simple_hull() const
     {
         return isl_map_simple_hull(copy());
+    }
+    map equate(int in_dim, int out_dim) const
+    {
+        return isl_map_equate(copy(), isl_dim_in, in_dim, isl_dim_out, out_dim);
+    }
+    set deltas() const
+    {
+        return isl_map_deltas(copy());
     }
 
     void map_domain_through( const map & other )
@@ -508,6 +524,11 @@ public:
     void coalesce()
     {
         m_object = isl_union_map_coalesce(m_object);
+    }
+
+    union_set deltas()
+    {
+        return isl_union_map_deltas(copy());
     }
 
     template <typename F>

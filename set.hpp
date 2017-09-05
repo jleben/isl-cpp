@@ -356,6 +356,11 @@ public:
         return isl_set_params(copy());
     }
 
+    set equate(int dim1, int dim2) const
+    {
+        return isl_set_equate(copy(), isl_dim_set, dim1, isl_dim_set, dim2);
+    }
+
     basic_set convex_hull() const
     {
         return isl_set_convex_hull(copy());
