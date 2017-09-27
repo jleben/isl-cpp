@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.0)
 
 project(isl-cpp)
 
@@ -12,8 +12,6 @@ if(NOT ISL_INCLUDE_DIR OR NOT ISL_LIBRARY)
   message(FATAL_ERROR "isl-cpp: isl not found")
 endif()
 
-include_directories(${ISL_INCLUDE_DIR})
-
 set(sources
   context.cpp
   matrix.cpp
@@ -21,6 +19,7 @@ set(sources
 
 add_library(isl-cpp STATIC ${sources})
 target_link_libraries(isl-cpp ${ISL_LIBRARY})
+target_include_directories(isl-cpp PUBLIC ${ISL_INCLUDE_DIR})
 
 if(ISL_CPP_BUILD_TESTING)
   add_subdirectory(test)
