@@ -197,6 +197,9 @@ public:
         return v;
     }
 
+    set lex_minimum() const;
+    set lex_maximum() const;
+
 #if 0 // Not available?
     basic_set & limit_above(isl::space::dimension_type dim, unsigned pos, int value)
     {
@@ -486,6 +489,18 @@ private:
         return result ? isl_stat_ok : isl_stat_error;
     }
 };
+
+inline
+set basic_set::lex_minimum() const
+{
+    return isl_basic_set_lexmin(copy());
+}
+
+inline
+set basic_set::lex_maximum() const
+{
+    return isl_basic_set_lexmax(copy());
+}
 
 inline
 set operator!( const set & s )
