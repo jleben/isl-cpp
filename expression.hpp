@@ -24,6 +24,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "value.hpp"
 #include "space.hpp"
 #include "printer.hpp"
+#include "set.hpp"
 
 #include <isl/aff.h>
 #include <iostream>
@@ -44,6 +45,23 @@ struct object_behavior<isl_aff>
     static isl_ctx * get_context( isl_aff * obj )
     {
         return isl_aff_get_ctx(obj);
+    }
+};
+
+template<>
+struct object_behavior<isl_pw_aff>
+{
+    static isl_pw_aff * copy( isl_pw_aff * obj )
+    {
+        return isl_pw_aff_copy(obj);
+    }
+    static void destroy( isl_pw_aff *obj )
+    {
+        isl_pw_aff_free(obj);
+    }
+    static isl_ctx * get_context( isl_pw_aff * obj )
+    {
+        return isl_pw_aff_get_ctx(obj);
     }
 };
 
@@ -159,6 +177,46 @@ private:
             }
             spc = spc.wrapped();
         }
+    }
+};
+
+class piecewise_expression : public object<isl_pw_aff>
+{
+public:
+    piecewise_expression(isl_pw_aff * p): object(p) {}
+
+    // FIXME: This is not exact.
+    expression plain_continuous()
+    {
+        if (piece_count() != 1)
+            return expression(nullptr);
+
+        expression r(nullptr);
+        for_each_piece([&](const set & s, const expression & e){
+            if (s.is_plain_universe())
+                r = e;
+        });
+        return r;
+    }
+
+    int piece_count() const
+    {
+        return isl_pw_aff_n_piece(get());
+    }
+
+    template <typename F>
+    void for_each_piece(F f)
+    {
+        isl_pw_aff_foreach_piece(get(), &for_each_piece_helper<F>, &f);
+    }
+
+private:
+    template <typename F>
+    static isl_stat for_each_piece_helper(isl_set * domain, isl_aff * expr, void * data)
+    {
+         F * f = static_cast<F*>(data);
+         (*f)(set(domain), expression(expr));
+         return isl_stat_ok;
     }
 };
 

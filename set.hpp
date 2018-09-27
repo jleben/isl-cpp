@@ -25,8 +25,6 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object.hpp"
 #include "point.hpp"
 #include "space.hpp"
-#include "expression.hpp"
-#include "constraint.hpp"
 #include "matrix.hpp"
 #include "printer.hpp"
 
@@ -39,6 +37,8 @@ namespace isl {
 class basic_map;
 class map;
 class union_map;
+class expression;
+class constraint;
 
 template<>
 struct object_behavior<isl_basic_set>
@@ -144,10 +144,7 @@ public:
     {
         m_object = isl_basic_set_project_out(m_object, (isl_dim_type)t, i, n);
     }
-    void add_constraint( const constraint & c)
-    {
-        m_object = isl_basic_set_add_constraint(m_object, c.copy());
-    }
+    void add_constraint( const constraint & c);
     void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
     {
         m_object = isl_basic_set_drop_constraints_involving_dims
@@ -189,13 +186,7 @@ public:
         return p;
     }
 
-    value maximum( const expression & expr ) const
-    {
-        isl_val *v = isl_basic_set_max_val(get(), expr.get());
-        if (!v)
-            throw error("No solution.");
-        return v;
-    }
+    value maximum( const expression & expr ) const;
 
     set lex_minimum() const;
     set lex_maximum() const;
@@ -272,6 +263,11 @@ public:
         return isl_set_is_empty(get());
     }
 
+    bool is_plain_universe() const
+    {
+        return isl_set_plain_is_universe(get());
+    }
+
     bool is_subset_of(const set & other) const
     {
         return isl_set_is_subset(get(), other.get());
@@ -291,20 +287,9 @@ public:
         m_object = isl_set_project_out(m_object, (isl_dim_type)t, i, n);
     }
 
-    value minimum( const expression & expr ) const
-    {
-        isl_val *v = isl_set_min_val(get(), expr.get());
-        if (!v)
-            throw error("No solution.");
-        return v;
-    }
-    value maximum( const expression & expr ) const
-    {
-        isl_val *v = isl_set_max_val(get(), expr.get());
-        if (!v)
-            throw error("No solution.");
-        return v;
-    }
+    value minimum( const expression & expr ) const;
+    value maximum( const expression & expr ) const;
+
     set lex_minimum() const
     {
         return isl_set_lexmin(copy());
@@ -321,10 +306,7 @@ public:
     {
         m_object = isl_set_insert_dims(m_object, isl_dim_set, pos, count);
     }
-    void add_constraint( const constraint & c)
-    {
-        m_object = isl_set_add_constraint(m_object, c.copy());
-    }
+    void add_constraint( const constraint & c);
     void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
     {
         m_object = isl_set_drop_constraints_involving_dims

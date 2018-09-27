@@ -319,6 +319,12 @@ private:
 };
 
 inline
+space align_params(const space & lhs, const space & rhs)
+{
+    return isl_space_align_params(lhs.copy(), rhs.copy());
+}
+
+inline
 space product( const space &lhs, const space &rhs)
 {
     return isl_space_product(lhs.copy(), rhs.copy());

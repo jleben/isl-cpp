@@ -15,6 +15,7 @@ endif()
 set(sources
   context.cpp
   matrix.cpp
+  set.cpp
 )
 
 add_library(isl-cpp STATIC ${sources})
