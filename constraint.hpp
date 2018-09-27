@@ -62,17 +62,11 @@ public:
     }
     static constraint equality( const expression & expr )
     {
-        constraint c = isl_equality_from_aff(expr.copy());
-        if (c.local_space().is_wrapping())
-            c.unwrap_space();
-        return c;
+        return isl_equality_from_aff(expr.copy());
     }
     static constraint inequality( const expression & expr )
     {
-        constraint c = isl_inequality_from_aff(expr.copy());
-        if (c.local_space().is_wrapping())
-            c.unwrap_space();
-        return c;
+        return isl_inequality_from_aff(expr.copy());
     }
 
     bool is_equality() const
@@ -177,6 +171,12 @@ inline
 constraint operator== (const expression &lhs, int rhs_int)
 {
     return constraint::equality(lhs - rhs_int);
+}
+
+template <> inline
+void printer::print<constraint>( const constraint & s )
+{
+    m_printer = isl_printer_print_constraint(m_printer, s.get());
 }
 
 }

@@ -26,6 +26,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "space.hpp"
 #include "set.hpp"
 #include "expression.hpp"
+#include "constraint.hpp"
 #include "matrix.hpp"
 #include "printer.hpp"
 
@@ -164,7 +165,11 @@ public:
     }
     void add_constraint( const constraint & c )
     {
-        m_object = isl_basic_map_add_constraint(m_object, c.copy());
+        auto isl_c = c.copy();
+        if (c.local_space().is_wrapping())
+            isl_c = isl_constraint_unwrap_local_space(isl_c);
+
+        m_object = isl_basic_map_add_constraint(m_object, isl_c);
     }
     void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
     {
@@ -398,7 +403,11 @@ public:
     }
     void add_constraint( const constraint & c )
     {
-        m_object = isl_map_add_constraint(m_object, c.copy());
+        auto isl_c = c.copy();
+        if (c.local_space().is_wrapping())
+            isl_c = isl_constraint_unwrap_local_space(isl_c);
+
+        m_object = isl_map_add_constraint(m_object, isl_c);
     }
     void drop_constraints_with( space::dimension_type t, unsigned i, unsigned n=1)
     {
