@@ -393,6 +393,10 @@ public:
     {
         return isl_map_get_tuple_name(get(), (isl_dim_type) type);
     }
+    void add_dimensions( space::dimension_type type, unsigned count )
+    {
+        m_object = isl_map_add_dims(m_object, (isl_dim_type) type, count);
+    }
     void insert_dimensions( space::dimension_type type, unsigned pos, unsigned count )
     {
         m_object = isl_map_insert_dims(m_object, (isl_dim_type) type, pos, count);
