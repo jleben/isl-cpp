@@ -119,6 +119,15 @@ public:
         auto map_space = isl_space_map_from_domain_and_range(in.copy(), out.copy());
         return isl_basic_map_identity(map_space);
     }
+    static basic_map between(const basic_set & in, const basic_set & out)
+    {
+        auto map_space = isl_space_map_from_domain_and_range(in.get_space().copy(), out.get_space().copy());
+        auto m = isl_basic_map_universe(map_space);
+        m = isl_basic_map_intersect_domain(m, in.copy());
+        m = isl_basic_map_intersect_range(m, out.copy());
+        return m;
+    }
+
     space get_space() const
     {
         return space( isl_basic_map_get_space(get()) );
@@ -253,6 +262,14 @@ public:
     {
         auto map_space = isl_space_map_from_domain_and_range(in.copy(), out.copy());
         return isl_map_identity(map_space);
+    }
+    static map between(const set & in, const set & out)
+    {
+        auto map_space = isl_space_map_from_domain_and_range(in.get_space().copy(), out.get_space().copy());
+        auto m = isl_map_universe(map_space);
+        m = isl_map_intersect_domain(m, in.copy());
+        m = isl_map_intersect_range(m, out.copy());
+        return m;
     }
     space get_space() const
     {
