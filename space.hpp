@@ -38,30 +38,36 @@ using std::string;
 using std::vector;
 
 class expression;
+class space;
 
 class identifier
 {
 public:
-    identifier(): data(nullptr) {}
-    identifier(const string & name): name(name), data(nullptr) {}
-    identifier(void *data): data(data) {}
-    identifier(const string & name, void * data): name(name), data(data) {}
+    identifier(): m_data(nullptr) {}
+    identifier(const string & name): m_name(name), m_data(nullptr) {}
+    identifier(void *data): m_data(data) {}
+    identifier(const string & name, void * data): m_name(name), m_data(data) {}
     identifier(isl_id*c_id):
-        name(isl_id_get_name(c_id)),
-        data(isl_id_get_user(c_id))
+        m_name(isl_id_get_name(c_id)),
+        m_data(isl_id_get_user(c_id))
     {}
     isl_id *c_id(isl_ctx *c_ctx) const
     {
-        const char *c_name = name.empty() ? nullptr : name.c_str();
-        if (!c_name && !data)
+        const char *c_name = m_name.empty() ? nullptr : m_name.c_str();
+        if (!c_name && !m_data)
             return nullptr;
         else
-            return isl_id_alloc(c_ctx, c_name, data);
+            return isl_id_alloc(c_ctx, c_name, m_data);
     }
 
-    bool empty() const { return name.empty() && data == nullptr; }
-    string name;
-    void *data;
+    bool empty() const { return m_name.empty() && m_data == nullptr; }
+
+    void * data() const { return m_data; }
+    const string & name() const { return m_name; }
+
+private:
+    string m_name;
+    void * m_data;
 };
 
 class tuple
@@ -311,7 +317,7 @@ private:
             if (elem.empty())
                 continue;
 
-            isl_id * c_id = isl_id_alloc(m_ctx.get(), elem.name.c_str(), elem.data);
+            isl_id * c_id = isl_id_alloc(m_ctx.get(), elem.name().c_str(), elem.data());
             m_object = isl_space_set_dim_id(get(), (isl_dim_type)type, dim_idx, c_id);
             ++dim_idx;
         }
