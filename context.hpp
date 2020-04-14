@@ -58,6 +58,9 @@ public:
 
     context( isl_ctx * ctx )
     {
+        if (ctx == nullptr)
+            return;
+
         auto iter = m_store.find(ctx);
         if (iter != m_store.end())
         {
@@ -65,8 +68,8 @@ public:
         }
         else
         {
-            d = std::shared_ptr<data>( new data() );
-            m_store.emplace(d.get()->ctx, d);
+            d = std::shared_ptr<data>( new data(ctx) );
+            m_store.emplace(ctx, d);
         }
     }
 
@@ -86,6 +89,8 @@ private:
 
     struct data
     {
+        data(isl_ctx * ctx): ctx(ctx) {}
+
         data()
         {
             ctx = isl_ctx_alloc();
