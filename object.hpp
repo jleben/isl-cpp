@@ -55,7 +55,7 @@ public:
         return *this;
     }
 
-protected:
+
     object( const context & ctx, T * obj ):
         m_ctx(ctx),
         m_object(obj)
@@ -69,6 +69,13 @@ protected:
     object( T * other_obj ):
         m_ctx( object_behavior<T>::get_context(other_obj) ),
         m_object( other_obj )
+    {}
+
+    struct copy_of {};
+
+    object(copy_of, T * p):
+        m_ctx(object_behavior<T>::get_context(p)),
+        m_object(object_behavior<T>::copy(p))
     {}
 
 protected:
