@@ -27,6 +27,7 @@ along with this program; if not, write to the Free Software Foundation, Inc.,
 #include "printer.hpp"
 
 #include <isl/schedule.h>
+#include <isl/schedule_node.h>
 
 namespace isl {
 
@@ -44,6 +45,23 @@ struct object_behavior<isl_schedule>
     static isl_ctx * get_context( isl_schedule * obj )
     {
         return isl_schedule_get_ctx(obj);
+    }
+};
+
+template<>
+struct object_behavior<isl_schedule_node>
+{
+    static isl_schedule_node * copy( isl_schedule_node * obj )
+    {
+        return isl_schedule_node_copy(obj);
+    }
+    static void destroy( isl_schedule_node *obj )
+    {
+        isl_schedule_node_free(obj);
+    }
+    static isl_ctx * get_context( isl_schedule_node * obj )
+    {
+        return isl_schedule_node_get_ctx(obj);
     }
 };
 
@@ -67,6 +85,42 @@ public:
     {
         m_object = isl_schedule_intersect_domain(m_object, domain.copy());
         return *this;
+    }
+};
+
+class schedule_node : public object<isl_schedule_node>
+{
+public:
+    using object<isl_schedule_node>::object;
+
+    isl_schedule_node_type type() const
+    {
+        return isl_schedule_node_get_type(m_object);
+    }
+
+    int child_count() const
+    {
+        return isl_schedule_node_n_children(m_object);
+    }
+
+    schedule_node child(int pos) const
+    {
+        return isl_schedule_node_get_child(m_object, pos);
+    }
+
+    void to_child(int pos)
+    {
+        m_object = isl_schedule_node_child(m_object, pos);
+    }
+
+    void to_parent()
+    {
+        m_object = isl_schedule_node_parent(m_object);
+    }
+
+    void remove()
+    {
+        m_object = isl_schedule_node_delete(m_object);
     }
 };
 
